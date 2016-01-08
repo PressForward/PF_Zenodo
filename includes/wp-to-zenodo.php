@@ -27,12 +27,17 @@ class WP_to_Zenodo {
 		$this->http_interface = ZS_JSON_Workers::init();
 	}
 
-	public function assemble_url($endpoint = 'deposit'){
+	public function assemble_url($endpoint = 'deposit', $id_array = false){
 		switch ($endpoint) {
 			case 'deposit':
 				return $this->base_zenodo_url.'deposit/depositions/?access_token='.$this->api_key;
 				break;
-
+			case 'publish':
+				return $this->base_zenodo_url.'deposit/depositions/'.$id_array['id'].'/actions/publish?access_token='.$this->api_key;
+				break;
+			case 'files':
+				return $this->base_zenodo_url.'deposit/depositions/'.$id_array['id'].'/files?access_token='.$this->api_key;
+				break;
 			default:
 				# code...
 				break;
@@ -63,12 +68,52 @@ class WP_to_Zenodo {
 
 			)
 		);
-		$post_result = $this->post($args);
+		$url = $this->assemble_url('deposit');
+		$post_result = $this->post($url, $args);
+		if ( false !== $post_result ){
+			return array (
+				'id'	=>	$post_result['id'],
+				'doi'	=>	$post_result['doi']
+			);
+		} else {
+			return false;
+		}
 
 	}
 
-	public function post($args){
-		$url = $this->assemble_url('deposit');
+	public function xml_submit($id_array, $post){
+		$url = $this->assemble_url('files');
+
+		$file_data = '';
+	}
+
+	public function image_submit($id_array, $image_atttachment_id){
+
+		$src = wp_get_attachment_url( $image_atttachment_id );
+		$file_data = wp_remote_get($src);
+	}
+
+	public function html_submit($id_array, $post){
+		$url = $this->assemble_url('files');
+
+		$file_data = '';
+	}
+
+	public function file_submit($args){
+		$url = $this->assemble_url('files');
+		//Content-Type: multipart/form-data
+
+		return wp_remote_post($url, $args);
+	}
+
+	public function publish($id_array){
+		$url = $this->assemble_url('publish');
+		$response = $this->post($url, array());
+		//Should return 202 to say accepted.
+	}
+
+	public function post($url, $args){
+
 		$post = $this->http_interface->post();
 	}
 
