@@ -20,7 +20,7 @@ if (!class_exists('ZS_JSON_Workers')){
 		}
 
 		public function head(){
-			header('Content-Type: application/json');
+			#header('Content-Type: application/json');
 		}
 
 		public function json_page($json){
