@@ -40,6 +40,11 @@ class WP_to_Zenodo {
 
 	public function inital_submit(){
 		$url = $this->assemble_url('deposit');
+		$core_data = array(
+			'relation'		=>	'isAlternateIdentifier',
+			'identifier'	=>	$source_url
+		);
+		$related_ids = array_merge($related, $core_data);
 		$args = array(
 			'metadata' => array(
 				'title'				=> 	$title,
@@ -54,7 +59,7 @@ class WP_to_Zenodo {
 				'publication_date'	=>	$publication_date,
 				'access_right'		=>	'open',
 				'prereserve_doi'	=>	true,
-				//'related_identifiers' later for citations.
+				'related_identifiers'	=>	$related_ids
 
 			)
 		);
