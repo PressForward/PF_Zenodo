@@ -130,3 +130,27 @@ function wp_to_zenodo(){
 	return WP_to_Zenodo::init();
 }
 add_action('init', 'wp_to_zenodo');
+
+/**
+ * 4<pre><?php
+ $obj = new Zenodo_Submit_Object(
+ 	array(
+ 				'item_url' => 'https://astrocompute.wordpress.com/2015/12/08/vo-interfaces-at-the-csiro-askap-science-data-archive-casda/',
+ 		'title' => 'VO Interfaces at the CSIRO ASKAP Science Data Archive (CASDA).',
+ 		'description' => 'Foobar',
+ 			'authors' => array(array('name' => 'Aram')),
+ 		'publication_date' => '2015-05-05',
+ 			'related' => array()
+ 	)
+ );
+ //var_dump($obj); die();
+ $objD = new stdClass();
+ 				$objD->item_url = 'https://astrocompute.wordpress.com/2015/12/08/vo-interfaces-at-the-csiro-askap-science-data-archive-casda/';
+ 		$objD->title = 'VO Interfaces at the CSIRO ASKAP Science Data Archive (CASDA).';
+ 		$objD->description = 'Foobar';
+ 		$objD->authors = array(array('name' => 'Aram'));
+ 		$objD->publication_date = '2015-05-05';
+ 		$objD->related_ids = array();
+ 		$objD->related = array();
+ var_dump(wp_to_zenodo()->inital_submit($objD));
+ */
