@@ -16,7 +16,7 @@ class WP_to_Zenodo {
 
 	private function __construct() {
 		#Stuff
-
+		$this->setup();
 	}
 
 	public function setup($env = 'stage'){
@@ -24,6 +24,7 @@ class WP_to_Zenodo {
 			$this->base_zenodo_url = 'https://sandbox.zenodo.org/api/';
 			$this->api_key = STAGE_ZENODO_KEY;
 		}
+		$this->http_interface = ZS_JSON_Workers::init();
 	}
 
 	public function assemble_url($endpoint = 'deposit'){
@@ -38,38 +39,37 @@ class WP_to_Zenodo {
 		}
 	}
 
-	public function inital_submit(){
-		$url = $this->assemble_url('deposit');
+	public function inital_submit(Submit_Object $submit_object){
 		$core_data = array(
 			'relation'		=>	'isAlternateIdentifier',
-			'identifier'	=>	$source_url
+			'identifier'	=>	$submit_object->item_url
 		);
-		$related_ids = array_merge($related, $core_data);
+		$related_ids = array_merge($submit_object->related, $core_data);
 		$args = array(
 			'metadata' => array(
-				'title'				=> 	$title,
+				'title'				=> 	$submit_object->title,
 				'upload_type'		=>	'publication',
 				# @TODO Turn this to 'blog' when ready
 				'publication_type'	=>	'other',
 				//Note: Can take basic HTML
-				'description'		=>	$description,
+				'description'		=>	$submit_object->description,
 				// An array of objects to become
 				// {"name": "Doe, John", "affiliation": "Zenodo"}
-				'creators'			=>	$authors,
-				'publication_date'	=>	$publication_date,
+				'creators'			=>	$submit_object->authors,
+				'publication_date'	=>	$submit_object->publication_date,
 				'access_right'		=>	'open',
 				'prereserve_doi'	=>	true,
-				'related_identifiers'	=>	$related_ids
+				'related_identifiers'	=>	$submit_object->related_ids
 
 			)
 		);
-		$post_result = $this->post($url, $args);
+		$post_result = $this->post($args);
 
 	}
 
-	public function post(){
-		$http_interface = ZS_JSON_Workers::init();
-		$post = $http_interface->post();
+	public function post($args){
+		$url = $this->assemble_url('deposit');
+		$post = $this->http_interface->post();
 	}
 
 	public function process_error_code($code){
