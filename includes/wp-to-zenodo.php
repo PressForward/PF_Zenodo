@@ -26,6 +26,8 @@ class WP_to_Zenodo {
 	public function setup($env = 'stage'){
 		if ( 'stage' == $env){
 			$this->base_zenodo_url = 'https://sandbox.zenodo.org/api/';
+			//Define in your WP config
+			# @TODO User setting.
 			$this->api_key = STAGE_ZENODO_KEY;
 		}
 		$this->http_interface = ZS_JSON_Workers::init();
@@ -48,7 +50,7 @@ class WP_to_Zenodo {
 		}
 	}
 
-	public function inital_submit( $submit_object){
+	public function inital_submit( Zenodo_Submit_Object $submit_object ){
 		$core_data = array(array(
 				'relation'		=>	'isAlternativeIdentifier',
 				'identifier'	=>	$submit_object->item_url
@@ -128,7 +130,6 @@ class WP_to_Zenodo {
 	}
 
 	public function post($url, $args){
-		//$url = 'http://requestb.in/1824n361';
 		$post = $this->http_interface->post($url, $args);
 	}
 
