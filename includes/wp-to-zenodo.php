@@ -50,7 +50,7 @@ class WP_to_Zenodo {
 
 	public function inital_submit( $submit_object){
 		$core_data = array(array(
-				'relation'		=>	'isAlternateIdentifier',
+				'relation'		=>	'isAlternativeIdentifier',
 				'identifier'	=>	$submit_object->item_url
 			)
 		);
@@ -79,7 +79,7 @@ class WP_to_Zenodo {
 				'publication_date'	=>	$submit_object->publication_date,
 				'access_right'		=>	'open',
 				'prereserve_doi'	=>	true,
-				//'related_identifiers'	=>	$related_objs
+				'related_identifiers'	=>	$related_objs
 
 			)
 		);
