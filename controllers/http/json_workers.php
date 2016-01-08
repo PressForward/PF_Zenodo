@@ -84,7 +84,9 @@ if (!class_exists('ZS_JSON_Workers')){
 				'redirection' => 5,
 				'httpversion' => '1.0',
 				'blocking' => true,
-				'headers' => array(),
+				'headers' => array(
+					'Content-Type'	=> 'application/json'
+				),
 				'body' => array(),
 				'cookies' => array()
 			);
