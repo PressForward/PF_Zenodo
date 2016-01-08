@@ -68,7 +68,7 @@ class WP_to_Zenodo {
 				'publication_date'	=>	$submit_object->publication_date,
 				'access_right'		=>	'open',
 				'prereserve_doi'	=>	true,
-				'related_identifiers'	=>	$submit_object->related_ids
+				//'related_identifiers'	=>	$related_ids
 
 			)
 		);

@@ -33,7 +33,7 @@ class Zenodo_Submit_Object{
 				'related'	=> array()
             );
         $args = wp_parse_args($basic_data, $defaults);
-
+        //var_dump($args);
         # Enforce business, sanitization rules.
         foreach ($args as $key => $property) {
             if ( false === $property ){
@@ -41,7 +41,7 @@ class Zenodo_Submit_Object{
                 continue;
             }
             elseif ( empty($property) ){
-                continue;
+                //continue;
             }
             switch ($key) {
                 case 'ID':
@@ -53,6 +53,8 @@ class Zenodo_Submit_Object{
                     # code...
                     break;
             }
+            //var_dump($key.'->');
+            //var_dump($property);
             $this->$key = $property;
         }
 
