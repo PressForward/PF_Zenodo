@@ -1,6 +1,6 @@
 <?php
 /*
-Plugin Name: PressForward Arceli Interface
+Plugin Name: PressForward Zenodo Interface
 Plugin URI: http://pressforward.org/
 Description: TK
 Version: 0.0.1
@@ -8,7 +8,7 @@ Author: Aram Zucker-Scharff,
 Author URI: http://aramzs.me,
 License: GPL2
 */
-/*  Developed for Arceli
+/*  Developed for Arce.li
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License, version 2, as
     published by the Free Software Foundation.
