@@ -49,11 +49,22 @@ class WP_to_Zenodo {
 	}
 
 	public function inital_submit( $submit_object){
-		$core_data = array(
-			'relation'		=>	'isAlternateIdentifier',
-			'identifier'	=>	$submit_object->item_url
+		$core_data = array(array(
+				'relation'		=>	'isAlternateIdentifier',
+				'identifier'	=>	$submit_object->item_url
+			)
 		);
 		$related_ids = array_merge($submit_object->related, $core_data);
+		//var_dump($related_ids); die();
+		$related_objs = array();
+		foreach ($related_ids as $array){
+			$object = new stdClass();
+			foreach ($array as $key => $value)
+			{
+			    $object->$key = $value;
+			}
+			$related_objs[] = $object;
+		}
 		$args = array(
 			'metadata' => array(
 				'title'				=> 	$submit_object->title,
@@ -68,7 +79,7 @@ class WP_to_Zenodo {
 				'publication_date'	=>	$submit_object->publication_date,
 				'access_right'		=>	'open',
 				'prereserve_doi'	=>	true,
-				//'related_identifiers'	=>	$related_ids
+				//'related_identifiers'	=>	$related_objs
 
 			)
 		);
