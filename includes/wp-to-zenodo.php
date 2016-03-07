@@ -17,10 +17,11 @@ class WP_to_Zenodo {
 	private function __construct() {
 		#Stuff
 		$this->setup();
+		$this->includes();
 	}
 
 	private function includes(){
-
+		require_once(dirname(__FILE__).'/PF-Modifications.php');
 	}
 
 	public function setup($env = 'stage'){
@@ -138,6 +139,7 @@ class WP_to_Zenodo {
 	}
 
 }
+
 function wp_to_zenodo(){
 	return WP_to_Zenodo::init();
 }
