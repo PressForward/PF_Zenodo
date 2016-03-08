@@ -50,7 +50,24 @@ class PFModifications {
 				<div class="handlediv" title="<?php esc_attr_e( 'Click to toggle' ); ?>"><br /></div>
 				<h3 class="hndle"><?php _e('Bibliographic Metadata') ?></h3>
 				<div class="inside">
-
+					<label for="pf_affiliations"><input type="text" id="pf_affiliations" name="pf_affiliations" value=""/><br />&nbsp;<?php _e('Enter Author Affiliations, semicolon seperated, in same order as authors.', 'pf'); ?></label><hr />
+					<?php
+						$title = isset( $_GET['t'] ) ? trim( strip_tags( html_entity_decode( stripslashes( $_GET['t'] ) , ENT_QUOTES) ) ) : '';
+						$tite = esc_html( $title );
+					?>
+					<label for="pf-source-title"><textarea type="text" id="pf-source-title" rows="5" cols="20" name="pf-source-title"><?php echo $title; ?></textarea><br />&nbsp;<?php _e('Override source title.', 'pf'); ?></label><hr />
+					<label for="pf-keywords"><input type="text" id="pf-keywords" name="pf-keywords" value=""/><br />&nbsp;<?php _e('Enter Keywords, semicolon seperated.', 'pf'); ?></label><hr />
+					<label for="pf-references"><input type="text" id="pf-references" name="pf-references" value=""/><br />&nbsp;<?php _e('Enter Referance Identifiers, semicolon seperated.', 'pf'); ?></label><hr />
+					<label for="pf-item-date"><input type="text" id="pf-item-date" name="pf-item-date" value=""/><br />&nbsp;<?php _e('Enter published date in the format YYYY-MM-DD, if that date is not today.', 'pf'); ?></label><hr />
+					<label for="pf-abstract"><textarea id="pf-abstract" name="pf-abstract" value="" rows="10" cols="20"></textarea><br />&nbsp;<?php _e('Enter an abstract, if applicable.', 'pf'); ?></label><hr />
+					<label for="pf-licence">
+						<select type="text" id="pf-license" name="pf-license">
+							<option value="cc-zero">CC-0</option>
+							<option value="cc-by">CC-BY</option>
+						</select><br />
+						CC0  :: “I don’t care about attribution”
+						CC-By :: “I want to receive attribution”
+					</label><hr />
 				</div>
 
 			</div>
