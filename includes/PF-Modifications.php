@@ -133,15 +133,15 @@ class PFModifications {
 				<div class="handlediv" title="<?php esc_attr_e( 'Click to toggle' ); ?>"><br /></div>
 				<h3 class="hndle"><?php _e('Bibliographic Metadata') ?></h3>
 				<div class="inside">
-					<label for="pf_affiliations"><input type="text" id="pf_affiliations" name="pf_affiliations" value=""/><br />&nbsp;<?php _e('Enter Author Affiliations, semicolon seperated, in same order as authors.', 'pf'); ?></label><hr />
+					<label for="pf_affiliations"><input type="text" id="pf_affiliations" name="pf_affiliations" value="" placeholder="Sample University;" /><br />&nbsp;<?php _e('Enter Author Affiliations, semicolon seperated, in same order as authors.', 'pf'); ?></label><hr />
 					<?php
 						$title = isset( $_GET['t'] ) ? trim( strip_tags( html_entity_decode( stripslashes( $_GET['t'] ) , ENT_QUOTES) ) ) : '';
 						$tite = esc_html( $title );
 					?>
-					<label for="zen_source_title"><textarea type="text" id="zen_source_title" rows="5" cols="20" name="zen_source_title"><?php echo $title; ?></textarea><br />&nbsp;<?php _e('Override source title.', 'pf'); ?></label><hr />
-					<label for="pf_keywords"><input type="text" id="pf_keywords" name="pf_keywords" value=""/><br />&nbsp;<?php _e('Enter Keywords, semicolon seperated.', 'pf'); ?></label><hr />
-					<label for="pf_references"><input type="text" id="pf_references" name="pf_references" value=""/><br />&nbsp;<?php _e('Enter Referance Identifiers, semicolon seperated.', 'pf'); ?></label><hr />
-					<label for="zen_item_date"><input type="text" id="zen_item_date" name="zen_item_date" value=""/><br />&nbsp;<?php _e('Enter published date in the format YYYY-MM-DD, if that date is not today.', 'pf'); ?></label><hr />
+					<label for="zen_source_title"><textarea type="text" id="zen_source_title" rows="5" cols="20" name="zen_source_title" placeholder="Name of Site"><?php echo $title; ?></textarea><br />&nbsp;<?php _e('Override source title.', 'pf'); ?></label><hr />
+					<label for="pf_keywords"><input type="text" id="pf_keywords" name="pf_keywords" value="" placeholder="Keyword1; Keyword2;" /><br />&nbsp;<?php _e('Enter Keywords, semicolon seperated.', 'pf'); ?></label><hr />
+					<label for="pf_references"><input type="text" id="pf_references" name="pf_references" value="" placeholder="101211.1; http://someurl.com; " /><br />&nbsp;<?php _e('Enter Referance Identifiers, semicolon seperated.', 'pf'); ?></label><hr />
+					<label for="zen_item_date"><input type="text" id="zen_item_date" name="zen_item_date" value="" placeholder="2015-10-30" /><br />&nbsp;<?php _e('Enter published date in the format YYYY-MM-DD, if that date is not today.', 'pf'); ?></label><hr />
 					<label for="pf_abstract"><textarea id="pf_abstract" name="pf_abstract" value="" rows="10" cols="20"></textarea><br />&nbsp;<?php _e('Enter an abstract, if applicable.', 'pf'); ?></label><hr />
 					<label for="pf_license">
 						<select type="text" id="pf_license" name="pf_license">
