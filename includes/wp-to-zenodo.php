@@ -16,12 +16,15 @@ class WP_to_Zenodo {
 
 	private function __construct() {
 		#Stuff
+		pf_log('Start up WP_to_Zenodo');
 		$this->setup();
 		$this->includes();
 	}
 
 	private function includes(){
 		require_once(dirname(__FILE__).'/PF-Modifications.php');
+		// Start me up!
+		add_action('pressforward_init', 'pf_modifications', 12, 0 );
 	}
 
 	public function setup($env = 'stage'){
@@ -143,4 +146,4 @@ class WP_to_Zenodo {
 function wp_to_zenodo(){
 	return WP_to_Zenodo::init();
 }
-add_action('init', 'wp_to_zenodo');
+add_action('pressforward_init', 'wp_to_zenodo', 11, 0);
