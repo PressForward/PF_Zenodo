@@ -2,7 +2,7 @@
 class Zenodo_Submit_Object{
 
     function __construct( $args ){
-
+		$this->relation = array();
         if ( !is_array( $args ) ){
             return new WP_Error(
                 'bad_object_call',
@@ -20,6 +20,21 @@ class Zenodo_Submit_Object{
         #$this->interface = $interface;
     }
 
+	public function set($key, $value){
+		switch ($key) {
+			case 'ID':
+				$this->post_id = $value;
+				break;
+			case 'item_url':
+				$this->relation[] = array(
+					'relation'		=>	'isAlternativeIdentifier',
+					'identifier'	=>	$value
+				);
+			default:
+				break;
+		}
+	}
+
     private function set_up_object( $basic_data ){
         //var_dump($args);
         $defaults = array(
@@ -36,26 +51,13 @@ class Zenodo_Submit_Object{
         //var_dump($args);
         # Enforce business, sanitization rules.
         foreach ($args as $key => $property) {
-            if ( false === $property ){
-                $this->$key = $property;
+            if ( !empty( $property ) ){
+                $this->set($key, $property);
                 continue;
             }
-            elseif ( empty($property) ){
-                //continue;
+            else ( empty($property) ){
+                continue;
             }
-            switch ($key) {
-                case 'ID':
-                    if ( empty($property) ){
-						//$property = md5($this->item_url);
-                    }
-                    break;
-                default:
-                    # code...
-                    break;
-            }
-            //var_dump($key.'->');
-            //var_dump($property);
-            $this->$key = $property;
         }
 
     }
