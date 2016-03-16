@@ -55,10 +55,11 @@ class WP_to_Zenodo {
 	}
 
 	public function inital_submit( Zenodo_Submit_Object $submit_object ){
-		$core_data = array(array(
-				'relation'		=>	'isAlternativeIdentifier',
-				'identifier'	=>	$submit_object->item_url
-			)
+		$core_data = array(
+						array(
+							'relation'		=>	'isAlternativeIdentifier',
+							'identifier'	=>	$submit_object->item_url
+						)
 		);
 		$related_ids = array_merge($submit_object->related, $core_data);
 		//var_dump($related_ids); die();

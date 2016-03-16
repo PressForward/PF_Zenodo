@@ -30,7 +30,12 @@ class Zenodo_Submit_Object{
 					'relation'		=>	'isAlternativeIdentifier',
 					'identifier'	=>	$value
 				);
+				break;
+			case 'title':
+				$this->title = $value;
+				break;
 			default:
+				$this->$key = $value;
 				break;
 		}
 	}
