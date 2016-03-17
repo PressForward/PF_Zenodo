@@ -2,7 +2,7 @@
 class Zenodo_Submit_Object{
 
     function __construct( $args ){
-		$this->relation = array();
+		$this->related_identifiers = array();
         $this->zenodo_contract = $this->deliver_contract();
         if ( !is_array( $args ) ){
             return new WP_Error(
@@ -27,7 +27,7 @@ class Zenodo_Submit_Object{
 				$this->post_id = $value;
 				break;
 			case 'item_url':
-				$this->relation[] = array(
+				$this->related_identifiers[] = array(
 					'relation'		=>	'isAlternativeIdentifier',
 					'identifier'	=>	$value
 				);

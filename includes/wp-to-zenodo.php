@@ -54,19 +54,29 @@ class WP_to_Zenodo {
 				break;
 			case 'access_right':
 				$filled = 'open';
+				break;
+			case 'license':
+				$filled = 'cc-zero';
+				break;
+			case 'related_identifiers':
+				// Always will be set, never will be filled.
+				break;
 			default:
 				$filler = 'fill_'.$type;
-				$filled = $this->$filler($type);
+				$filled = $this->$filler($id);
 				break;
 		}
 
 		return $this->enforce($type, $filled);
 	}
 
+	public function semicolon_split($string){
+		return explode(';', $string);
+	}
 
 	public function fill_creators($id){
 		$filled = pressforward()->metas->get_post_pf_meta($id, 'item_authors', true);
-		$authors = split(';', $filled);
+		$authors = $this->semicolon_split($filled);
 		if (!empty($authors)){
 			$creators = array();
 			foreach ($authors as $author){
@@ -77,6 +87,21 @@ class WP_to_Zenodo {
 		}
 		return $creators;
 
+	}
+
+	public function fill_keywords($id){
+		$keywords = pressforward()->metas->get_post_pf_meta($id, 'pf_keywords');
+		return $this->semicolon_split($keywords);
+
+	}
+
+	public function fill_description($id){
+		$filled = pressforward()->metas->get_post_pf_meta($id, 'revertible_feed_text');
+		if (empty($filled)){
+			$post = get_post($id);
+			$filled = wp_html_excerpt($post->post_content, 160);
+		}
+		return $filled;
 	}
 
 	private function includes(){
