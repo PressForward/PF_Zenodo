@@ -24,7 +24,7 @@ class Zenodo_Submit_Object{
 	public function set($key, $value){
 		switch ($key) {
 			case 'ID':
-				$this->post_id = $value;
+				$this->ID = $value;
 				break;
 			case 'item_url':
 				$this->related_identifiers[] = array(
@@ -61,7 +61,9 @@ class Zenodo_Submit_Object{
                 $this->set($key, $property);
                 continue;
             }
-            else ( empty($property) ){
+            elseif ( empty($property) ){
+                continue;
+            } else {
                 continue;
             }
         }
@@ -73,7 +75,7 @@ class Zenodo_Submit_Object{
     private function fill_object(){
         //pressforward()->metas->get_post_pf_meta($id, $field, $single = true, $obj = false)
         foreach ($this->zenodo_contract as $contract_prop=>$contract_rule){
-            if ( property_exists($this, $contract_prop) && !empty($this->$contract_prop) )
+            if ( property_exists($this, $contract_prop) && !empty($this->$contract_prop) ){
                 $this->$contract_prop = wp_to_zenodo()->enforce($contract_prop, $this->$contract_prop);
             } else {
                 $this->contract_prop = wp_to_zenodo()->fill($this->ID, $contract_prop);

@@ -77,10 +77,17 @@ class WP_to_Zenodo {
 	public function fill_creators($id){
 		$filled = pressforward()->metas->get_post_pf_meta($id, 'item_authors', true);
 		$authors = $this->semicolon_split($filled);
+		$affiliation = $this->semicolon_split(pressforward()->metas->get_post_pf_meta($id, 'pf_affiliations'));
+		$c = 0;
 		if (!empty($authors)){
 			$creators = array();
 			foreach ($authors as $author){
-				$creators[] = array('name' => $author);
+				if ($affiliation[$c]){
+					$creators[] = array('name' => $author, 'affiliation' => $affiliation[$c]);
+				} else {
+					$creators[] = array('name' => $author );
+				}
+				$c++;
 			}
 		} else {
 			$creators = array( 'name' => $filled );
