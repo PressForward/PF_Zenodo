@@ -1,7 +1,9 @@
 <?php
 class Zenodo_Submit_Object{
 
-    function __construct( $args ){
+    //private $zenodo_contract;
+
+    public function __construct( $args ){
 		$this->related_identifiers = array();
         $this->zenodo_contract = $this->deliver_contract();
         if ( !is_array( $args ) ){
@@ -9,11 +11,11 @@ class Zenodo_Submit_Object{
                 'bad_object_call',
                 __('Submit_Object was badly called. It requires, but did not receive, an array. ')
             );
-        } elseif (empty($args['item_url'])) {
+/**        } elseif (empty($args['item_url'])) {
 			return new WP_Error(
 				'no_item_url',
 				__('The array to form Submit_Object did not have a URL.')
-			);
+			);**/
 		} else {
             $this->set_up_object( $args );
         }
@@ -21,7 +23,7 @@ class Zenodo_Submit_Object{
         #$this->interface = $interface;
     }
 
-	public function set($key, $value){
+	private function set($key, $value){
 		switch ($key) {
 			case 'ID':
 				$this->ID = $value;
@@ -32,7 +34,7 @@ class Zenodo_Submit_Object{
 					'identifier'	=>	$value
 				);
 				break;
-			case 'title':
+			case 'post_title':
 				$this->title = $value;
 				break;
 			default:
@@ -42,16 +44,14 @@ class Zenodo_Submit_Object{
 	}
 
     private function set_up_object( $basic_data ){
-        //var_dump($args);
+        //var_dump($basic_data); die();
         $defaults = array(
                 'ID'    => 0,
-                'item_url' => '',
-                'title' => '',
-                'description' => '',
-				'authors' => array(),
+                //'title' => '',
+				//'authors' => array(),
                 // '2015-05-05'
-				'publication_date' => '',
-				'related'	=> array()
+				//'publication_date' => '',
+				//'related'	=> array()
             );
         $args = wp_parse_args($basic_data, $defaults);
         //var_dump($args);
@@ -74,17 +74,30 @@ class Zenodo_Submit_Object{
 
     private function fill_object(){
         //pressforward()->metas->get_post_pf_meta($id, $field, $single = true, $obj = false)
+        var_dump('fill object');
+        //var_dump($this->zenodo_contract);
         foreach ($this->zenodo_contract as $contract_prop=>$contract_rule){
             if ( property_exists($this, $contract_prop) && !empty($this->$contract_prop) ){
                 $this->$contract_prop = wp_to_zenodo()->enforce($contract_prop, $this->$contract_prop);
             } else {
-                $this->contract_prop = wp_to_zenodo()->fill($this->ID, $contract_prop);
+                $this->$contract_prop = wp_to_zenodo()->fill($this->ID, $contract_prop);
             }
 
         }
+        $this->related_identifiers[] = array(
+            'relation' => 'isIdenticalTo',
+            'identifier' => get_permalink($this->ID)
+        );
+
+        foreach ($this as $property => $value){
+            if (!array_key_exists( $property, $this->deliver_contract() )){
+                unset($this->$property);
+            }
+        }
+
     }
 
-    public function deliver_contract(){
+    private function deliver_contract(){
         return array(
             'upload_type' => '',
             'publication_type' => '',
@@ -99,8 +112,8 @@ class Zenodo_Submit_Object{
             'references' => array(''),
             'communities' => array( new stdClass() ),
             'journal_title' => '',
-            'journal_volume' => '',
-            'journal_issue' => ''
+            //'journal_volume' => '',
+            //'journal_issue' => ''
 
         );
     }

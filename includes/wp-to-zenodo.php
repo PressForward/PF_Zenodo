@@ -31,9 +31,13 @@ class WP_to_Zenodo {
 				# code...
 				break;
 		}
+		var_dump($type);
+		var_dump($value);
+		return $value;
 	}
 
 	public function fill($id, $type){
+		$filled = '';
 		switch ($type) {
 			case 'upload_type':
 				$filled = 'publication';
@@ -61,6 +65,14 @@ class WP_to_Zenodo {
 			case 'related_identifiers':
 				// Always will be set, never will be filled.
 				break;
+			case 'references':
+				$filler = $this->semicolon_split(pressforward()->metas->get_post_pf_meta($id, 'pf_references', true));
+				break;
+			case 'communities':
+				$filler = array(
+					array('identifier' => 'arceli')
+				);
+				break;
 			default:
 				$filler = 'fill_'.$type;
 				$filled = $this->$filler($id);
@@ -75,7 +87,7 @@ class WP_to_Zenodo {
 	}
 
 	public function fill_creators($id){
-		$filled = pressforward()->metas->get_post_pf_meta($id, 'item_authors', true);
+		$filled = pressforward()->metas->get_post_pf_meta($id, 'item_author', true);
 		$authors = $this->semicolon_split($filled);
 		$affiliation = $this->semicolon_split(pressforward()->metas->get_post_pf_meta($id, 'pf_affiliations'));
 		$c = 0;
@@ -107,7 +119,19 @@ class WP_to_Zenodo {
 		if (empty($filled)){
 			$post = get_post($id);
 			$filled = wp_html_excerpt($post->post_content, 160);
+		} else {
+			$filled = wp_html_excerpt($filled, 160);
 		}
+		return $filled;
+	}
+
+	public function fill_journal_title($id){
+		$filled = '';
+		$filled = pressforward()->metas->get_post_pf_meta($id, 'source_title');
+		if (!empty($filled)){
+			$filled .= '; ';
+		}
+		$filled .= 'Aggregated by '.get_bloginfo('name');
 		return $filled;
 	}
 
