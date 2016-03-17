@@ -31,7 +31,7 @@ class PFModifications {
 		add_action( 'establish_pf_metas', array($this, 'establish_zenodo_meta'), 10, 2 );
 		add_action( 'nominate_this_sidebar_top', array($this, 'zenodo_required_meta_fields') );
 
-		add_filter( 'pf_author_nominate_this_prompt', function(){ return 'Enter author names, semicolon seperated, in the following format: [last-name], [first-name]; ...'; } );
+		add_filter( 'pf_author_nominate_this_prompt', function(){ return 'Enter author names, semicolon separated, in the following format: , ; ...'; } );
 		add_filter( 'pf_meta_terms', array( $this, 'valid_meta_terms' ), 10, 1 );
 	}
 
