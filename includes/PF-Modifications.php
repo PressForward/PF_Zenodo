@@ -141,7 +141,7 @@ class PFModifications {
 					<label for="zen_source_title"><textarea type="text" id="zen_source_title" rows="5" cols="20" name="zen_source_title" placeholder="Name of Site"><?php echo $title; ?></textarea><br />&nbsp;<?php _e('Name of current site.', 'pf'); ?></label><hr />
 					<label for="pf_keywords"><input type="text" id="pf_keywords" name="pf_keywords" value="" placeholder="Keyword1; Keyword2;" /><br />&nbsp;<?php _e('Enter Keywords, semicolon seperated.', 'pf'); ?></label><hr />
 
-					<label for="pf_references"><textarea id="pf_references" name="pf_references" value="" rows="10" cols="20"></textarea><br />&nbsp;<?php _e('Enter Links or DOIs for References Listed in Article, semicolons separated.', 'pf'); ?></label><hr />
+					<label for="pf_references"><textarea id="pf_references" name="pf_references" value="" rows="10" cols="20"></textarea><br />&nbsp;<?php _e('Enter links or DOIs for references listed in article, semicolons separated.', 'pf'); ?></label><hr />
 
 					<label for="zen_item_date"><input type="text" id="zen_item_date" name="zen_item_date" value="" placeholder="2015-10-30" /><br />&nbsp;<?php _e('Enter published date in the format YYYY-MM-DD, if that date is not today.', 'pf'); ?></label><hr />
 
