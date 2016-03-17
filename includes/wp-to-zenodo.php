@@ -169,40 +169,9 @@ class WP_to_Zenodo {
 	}
 
 	public function inital_submit( Zenodo_Submit_Object $submit_object ){
-		$core_data = array(
-						array(
-							'relation'		=>	'isAlternativeIdentifier',
-							'identifier'	=>	$submit_object->item_url
-						)
-		);
-		$related_ids = array_merge($submit_object->related, $core_data);
-		//var_dump($related_ids); die();
-		$related_objs = array();
-		foreach ($related_ids as $array){
-			$object = new stdClass();
-			foreach ($array as $key => $value)
-			{
-			    $object->$key = $value;
-			}
-			$related_objs[] = $object;
-		}
 		$args = array(
-			'metadata' => array(
-				'title'				=> 	$submit_object->title,
-				'upload_type'		=>	'publication',
-				# @TODO Turn this to 'blog' when ready
-				'publication_type'	=>	'other',
-				//Note: Can take basic HTML
-				'description'		=>	$submit_object->description,
-				// An array of objects to become
-				// {"name": "Doe, John", "affiliation": "Zenodo"}
-				'creators'			=>	$submit_object->authors,
-				'publication_date'	=>	$submit_object->publication_date,
-				'access_right'		=>	'open',
-				'prereserve_doi'	=>	true,
-				'related_identifiers'	=>	$related_objs
+			'metadata' => $submit_object
 
-			)
 		);
 		$url = $this->assemble_url('deposit');
 		$post_result = $this->post($url, $args);

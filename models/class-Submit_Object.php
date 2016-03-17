@@ -28,10 +28,10 @@ class Zenodo_Submit_Object{
 			case 'ID':
 				$this->ID = $value;
 				break;
-			case 'item_url':
+			case 'guid':
 				$this->related_identifiers[] = array(
 					'relation'		=>	'isAlternativeIdentifier',
-					'identifier'	=>	$value
+					'identifier'	=>	pressforward()->metas->get_post_pf_meta($this->ID, 'item_link')
 				);
 				break;
 			case 'post_title':
