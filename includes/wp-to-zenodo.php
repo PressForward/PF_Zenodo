@@ -21,6 +21,64 @@ class WP_to_Zenodo {
 		$this->includes();
 	}
 
+	public function enforce($type, $value){
+		switch ($type) {
+			case 'value':
+				# code...
+				break;
+
+			default:
+				# code...
+				break;
+		}
+	}
+
+	public function fill($id, $type){
+		switch ($type) {
+			case 'upload_type':
+				$filled = 'publication';
+				break;
+
+			case 'publication_type':
+				$filled = 'other';
+				break;
+
+			case 'publication_date':
+				$filled = pressforward()->metas->get_post_pf_meta($id, 'item_date', true);
+				if (empty($filled)){
+					$filled = date('c');
+				}
+				break;
+			case 'title':
+				$filled = get_the_title($id);
+				break;
+			case 'access_right':
+				$filled = 'open';
+			default:
+				$filler = 'fill_'.$type;
+				$filled = $this->$filler($type);
+				break;
+		}
+
+		return $this->enforce($type, $filled);
+	}
+
+
+	public function fill_creators($id){
+		$filled = pressforward()->metas->get_post_pf_meta($id, 'item_authors', true);
+		$authors = split(';', $filled);
+		if (!empty($authors)){
+			$creators = array();
+			foreach ($authors as $author){
+				$creators[] = array('name' => $author);
+			}
+		} else {
+			$creators = array( 'name' => $filled );
+		}
+		return $creators;
+
+	}
+
 	private function includes(){
 		require_once(dirname(__FILE__).'/PF-Modifications.php');
 		// Start me up!

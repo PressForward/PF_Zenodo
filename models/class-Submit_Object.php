@@ -3,6 +3,7 @@ class Zenodo_Submit_Object{
 
     function __construct( $args ){
 		$this->relation = array();
+        $this->zenodo_contract = $this->deliver_contract();
         if ( !is_array( $args ) ){
             return new WP_Error(
                 'bad_object_call',
@@ -65,6 +66,41 @@ class Zenodo_Submit_Object{
             }
         }
 
+        $this->fill_object();
+
+    }
+
+    private function fill_object(){
+        //pressforward()->metas->get_post_pf_meta($id, $field, $single = true, $obj = false)
+        foreach ($this->zenodo_contract as $contract_prop=>$contract_rule){
+            if ( property_exists($this, $contract_prop) && !empty($this->$contract_prop) )
+                $this->$contract_prop = wp_to_zenodo()->enforce($contract_prop, $this->$contract_prop);
+            } else {
+                $this->contract_prop = wp_to_zenodo()->fill($this->ID, $contract_prop);
+            }
+
+        }
+    }
+
+    public function deliver_contract(){
+        return array(
+            'upload_type' => '',
+            'publication_type' => '',
+            'publication_date'  => date('c'),
+            'title' => '',
+            'creators'  => array( new stdClass() ),
+            'description' => '',
+            'access_right' => 'open',
+            'license'   =>  'cc-zero',
+            'keywords'  =>  array(''),
+            'related_identifiers' => array( new stdClass() ),
+            'references' => array(''),
+            'communities' => array( new stdClass() ),
+            'journal_title' => '',
+            'journal_volume' => '',
+            'journal_issue' => ''
+
+        );
     }
 
 }
