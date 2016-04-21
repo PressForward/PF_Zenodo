@@ -145,7 +145,7 @@ class PFModifications {
 
 					<label for="zen_item_date"><input type="text" id="zen_item_date" name="zen_item_date" value="" placeholder="2015-10-30" /><br />&nbsp;<?php _e('Enter published date in the format YYYY-MM-DD, if that date is not today.', 'pf'); ?></label><hr />
 
-					<label for="pf_abstract"><textarea id="pf_abstract" name="pf_abstract" value="" rows="10" cols="20"></textarea><br />&nbsp;<?php _e('Enter an abstract, if applicable.', 'pf'); ?></label><hr />
+					<label for="pf_abstract"><textarea id="pf_abstract" name="pf_abstract" value="" rows="10" cols="20"></textarea><br />&nbsp;<?php _e('Enter an abstract or description.', 'pf'); ?></label><hr />
 					<label for="pf_license">
 						<select type="text" id="pf_license" name="pf_license">
 							<option value="cc-zero">CC-0</option>
