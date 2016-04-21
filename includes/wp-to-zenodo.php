@@ -17,8 +17,21 @@ class WP_to_Zenodo {
 	private function __construct() {
 		#Stuff
 		pf_log('Start up WP_to_Zenodo');
-		$this->setup();
+		$this->setup('prod');
 		$this->includes();
+		add_action('transition_post_status', array($this, 'to_zenodo_on_publish'), 10, 3);
+	}
+
+	public function to_zenodo_on_publish( $new_status, $old_status, $post ){
+		remove_action( 'transition_post_status', array($this, 'to_zenodo_on_publish') );
+		if ( ( 'publish' == $new_status ) && pressforward()->metas->get_post_pf_meta($post->ID, 'pf_zenodo_ready', true)){
+			$post_object = get_post($post, ARRAY_A);
+			$zenodo_object = new Zenodo_Submit_Object($post_object);
+			$response = $this->inital_submit( $zenodo_object );
+			//var_dump($response); die();
+		}
+
+		add_action('transition_post_status', array($this, 'to_zenodo_on_publish'), 10, 3);
 	}
 
 	public function enforce($type, $value){
@@ -31,8 +44,8 @@ class WP_to_Zenodo {
 				# code...
 				break;
 		}
-		var_dump($type);
-		var_dump($value);
+		//var_dump($type);
+		//var_dump($value);
 		return $value;
 	}
 
@@ -142,8 +155,13 @@ class WP_to_Zenodo {
 	}
 
 	public function setup($env = 'stage'){
-		if ( 'stage' == $env){
+		if ( 'stage' == $env ){
 			$this->base_zenodo_url = 'https://sandbox.zenodo.org/api/';
+			//Define in your WP config
+			# @TODO User setting.
+			$this->api_key = STAGE_ZENODO_KEY;
+		} elseif ( 'prod' == $env ){
+			$this->base_zenodo_url = 'https://zenodo.org/api/';
 			//Define in your WP config
 			# @TODO User setting.
 			$this->api_key = STAGE_ZENODO_KEY;
@@ -176,9 +194,10 @@ class WP_to_Zenodo {
 		$url = $this->assemble_url('deposit');
 		$post_result = $this->post($url, $args);
 		if ( false !== $post_result ){
+			add_post_meta($submit_object->ID, 'pf_zenodo_id', $post_result['id'], true);
 			return array (
 				'id'	=>	$post_result['id'],
-				'doi'	=>	$post_result['doi']
+				//'doi'	=>	$post_result['doi'] // this doesn't happen until later
 			);
 		} else {
 			return false;
