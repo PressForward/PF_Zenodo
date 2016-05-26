@@ -10,7 +10,13 @@
 			</publisher>
 		</journal-meta>
 		<article-meta>
-			<article-id pub-id-type="doi"><?php echo $DOI; ?></article-id>
+			<?php
+				if ( !empty($DOI) ){
+					?>
+					<article-id pub-id-type="doi"><?php echo $DOI; ?></article-id>
+					<?php
+				}
+			?>
 			<article-categories>
 				<subj-group subj-group-type="heading">
 					<?php

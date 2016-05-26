@@ -20,12 +20,35 @@ class WP_to_JATS {
 	}
 
 	public function assemble_jats( $post_object ){
-
+		
 	}
 
 	public function get_the_jats( $post_object, $override_vars = array(), $use_mu = false ){
 		$post_vars = $this->assemble_jats( $post_object );
-		$vars = array_merge( $post_vars, $override_vars );
+		/**
+		 * Define the array of defaults
+		 */
+		$defaults = array(
+			'DOI' => '',
+			'categories' => array(),
+			'item_title' => "",
+			'authors' => array(),
+			'pub_type' => 'epub',
+			'day' => '',
+			'month' => '',
+			'year' => '',
+			'excerpt' => '',
+			'the_content' => ''
+		);
+
+		// Clean out empties and false.
+		$override_vars = array_filter($override_args);
+		// Overrides gooo
+		$vars = array_merge($post_vars, $override_args);
+		/**
+		 * Parse final set of vars an array and merge it with $defaults
+		 */
+		$vars = wp_parse_args( $vars, $defaults );
 		return $this->get_view( 'JATS', $vars, $use_mu );
 	}
 
