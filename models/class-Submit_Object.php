@@ -112,6 +112,7 @@ class Zenodo_Submit_Object{
             'references' => array(''),
             'communities' => array( new stdClass() ),
             'journal_title' => '',
+            'doi'   =>  ''
             //'journal_volume' => '',
             //'journal_issue' => ''
 

@@ -29,6 +29,9 @@ class WP_to_Zenodo {
 			$zenodo_object = new Zenodo_Submit_Object($post_object);
 			$response = $this->inital_submit( $zenodo_object );
 			//var_dump($response); die();
+			if ( false !== $response ){
+				$jats_response = $this->xml_submit();
+			}
 		}
 
 		add_action('transition_post_status', array($this, 'to_zenodo_on_publish'), 10, 3);
@@ -196,8 +199,9 @@ class WP_to_Zenodo {
 		if ( false !== $post_result ){
 			add_post_meta($submit_object->ID, 'pf_zenodo_id', $post_result['id'], true);
 			return array (
-				'id'	=>	$post_result['id'],
-				//'doi'	=>	$post_result['doi'] // this doesn't happen until later
+				'zenodo_id'		=>	$post_result['id'],
+				'post_id' 		=>  $submit_object->ID
+				//'doi'	=>	$post_result['doi'] // this doesn't happen until later, when we publish
 			);
 		} else {
 			return false;
