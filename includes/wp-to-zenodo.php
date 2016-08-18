@@ -24,7 +24,7 @@ class WP_to_Zenodo {
 
 	public function to_zenodo_on_publish( $new_status, $old_status, $post ){
 		remove_action( 'transition_post_status', array($this, 'to_zenodo_on_publish') );
-		if ( ( 'publish' == $new_status ) && pressforward()->metas->get_post_pf_meta($post->ID, 'pf_zenodo_ready', true)){
+		if ( ( 'publish' == $new_status ) && pressforward('controller.metas')->get_post_pf_meta($post->ID, 'pf_zenodo_ready', true)){
 			$post_object = get_post($post, ARRAY_A);
 			$zenodo_object = new Zenodo_Submit_Object($post_object);
 			$response = $this->inital_submit( $zenodo_object );
@@ -64,7 +64,7 @@ class WP_to_Zenodo {
 				break;
 
 			case 'publication_date':
-				$filled = pressforward()->metas->get_post_pf_meta($id, 'item_date', true);
+				$filled = pressforward('controller.metas')->get_post_pf_meta($id, 'item_date', true);
 				if (empty($filled)){
 					$filled = date('c');
 				}
@@ -82,7 +82,7 @@ class WP_to_Zenodo {
 				// Always will be set, never will be filled.
 				break;
 			case 'references':
-				$filler = $this->semicolon_split(pressforward()->metas->get_post_pf_meta($id, 'pf_references', true));
+				$filler = $this->semicolon_split(pressforward('controller.metas')->get_post_pf_meta($id, 'pf_references', true));
 				break;
 			case 'communities':
 				$filler = array(
@@ -103,9 +103,9 @@ class WP_to_Zenodo {
 	}
 
 	public function fill_creators($id){
-		$filled = pressforward()->metas->get_post_pf_meta($id, 'item_author', true);
+		$filled = pressforward('controller.metas')->get_post_pf_meta($id, 'item_author', true);
 		$authors = $this->semicolon_split($filled);
-		$affiliation = $this->semicolon_split(pressforward()->metas->get_post_pf_meta($id, 'pf_affiliations'));
+		$affiliation = $this->semicolon_split(pressforward('controller.metas')->get_post_pf_meta($id, 'pf_affiliations'));
 		$c = 0;
 		if (!empty($authors)){
 			$creators = array();
@@ -125,13 +125,13 @@ class WP_to_Zenodo {
 	}
 
 	public function fill_keywords($id){
-		$keywords = pressforward()->metas->get_post_pf_meta($id, 'pf_keywords');
+		$keywords = pressforward('controller.metas')->get_post_pf_meta($id, 'pf_keywords');
 		return $this->semicolon_split($keywords);
 
 	}
 
 	public function fill_description($id){
-		$filled = pressforward()->metas->get_post_pf_meta($id, 'revertible_feed_text');
+		$filled = pressforward('controller.metas')->get_post_pf_meta($id, 'revertible_feed_text');
 		if (empty($filled)){
 			$post = get_post($id);
 			$filled = wp_html_excerpt($post->post_content, 160);
@@ -143,7 +143,7 @@ class WP_to_Zenodo {
 
 	public function fill_journal_title($id){
 		$filled = '';
-		$filled = pressforward()->metas->get_post_pf_meta($id, 'source_title');
+		$filled = pressforward('controller.metas')->get_post_pf_meta($id, 'source_title');
 		if (!empty($filled)){
 			$filled .= '; ';
 		}

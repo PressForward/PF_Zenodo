@@ -31,7 +31,7 @@ class Zenodo_Submit_Object{
 			case 'guid':
 				$this->related_identifiers[] = array(
 					'relation'		=>	'isAlternativeIdentifier',
-					'identifier'	=>	pressforward()->metas->get_post_pf_meta($this->ID, 'item_link')
+					'identifier'	=>	pressforward('controller.metas')->get_post_pf_meta($this->ID, 'item_link')
 				);
 				break;
 			case 'post_title':
@@ -73,7 +73,7 @@ class Zenodo_Submit_Object{
     }
 
     private function fill_object(){
-        //pressforward()->metas->get_post_pf_meta($id, $field, $single = true, $obj = false)
+        //pressforward('controller.metas')->get_post_pf_meta($id, $field, $single = true, $obj = false)
         var_dump('fill object');
         //var_dump($this->zenodo_contract);
         foreach ($this->zenodo_contract as $contract_prop=>$contract_rule){

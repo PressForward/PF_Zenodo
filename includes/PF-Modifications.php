@@ -119,11 +119,11 @@ class PFModifications {
 				'zen_item_date'	=>	array( 'name' => 'item_date' )
 			)
 		);
-		$check = pressforward()->metas->update_pf_meta($id, 'pf_zenodo_ready', true);
+		$check = pressforward('controller.metas')->update_pf_meta($id, 'pf_zenodo_ready', true);
 		foreach ($valid_metas as $get_key => $descript ){
 			pf_log($id.'-'.$get_key.'-'.$descript['name']);
 			pf_log($_POST[$get_key]);
-			$check = pressforward()->metas->update_pf_meta($id, $descript['name'], $_POST[$get_key]);
+			$check = pressforward('controller.metas')->update_pf_meta($id, $descript['name'], $_POST[$get_key]);
 			pf_log($check);
 		}
 		return '';
