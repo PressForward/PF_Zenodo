@@ -91,7 +91,12 @@ class WP_to_Zenodo {
 				break;
 			default:
 				$filler = 'fill_'.$type;
-				$filled = $this->$filler($id);
+				if (method_exists($this, $filler)){
+					$filled = $this->$filler($id);
+				} else {
+					pf_log('No fill for '.$type);
+					$filled = '';
+				}
 				break;
 		}
 
@@ -110,7 +115,7 @@ class WP_to_Zenodo {
 		if (!empty($authors)){
 			$creators = array();
 			foreach ($authors as $author){
-				if ($affiliation[$c]){
+				if (!empty($affiliation) && !empty($affiliation[$c])){
 					$creators[] = array('name' => $author, 'affiliation' => $affiliation[$c]);
 				} else {
 					$creators[] = array('name' => $author );

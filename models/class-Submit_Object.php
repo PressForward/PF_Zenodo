@@ -74,7 +74,7 @@ class Zenodo_Submit_Object{
 
     private function fill_object(){
         //pressforward('controller.metas')->get_post_pf_meta($id, $field, $single = true, $obj = false)
-        var_dump('fill object');
+        //var_dump('fill object');
         //var_dump($this->zenodo_contract);
         foreach ($this->zenodo_contract as $contract_prop=>$contract_rule){
             if ( property_exists($this, $contract_prop) && !empty($this->$contract_prop) ){
