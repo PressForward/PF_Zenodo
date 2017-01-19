@@ -128,5 +128,54 @@ if (!class_exists('ZS_JSON_Workers')){
 		public function get($url, $args, $settings = array()){
 			return $this->post($url, $args, $settings, true);
 		}
+
+		// Upload a file
+		public function upload( $url, $file_path ) {
+			$post_data = array( 'file' => '@' . $file_path );
+			//var_dump($url);
+			$response = wp_remote_post( $url, array(
+				'method' => 'post',
+				'timeout' => 30,
+				'blocking' => true,
+				'body' => $post_data,
+				)
+			);
+			//var_dump($response);
+			if ( is_wp_error( $response ) ) {
+				return $response->get_error_message();
+			} else {
+				return json_decode( $response, $assoc = true );
+			}
+		}
+
+		public function curl_upload($url, $file_path){
+
+			// A new variable included with curl in PHP 5.5 - CURLOPT_SAFE_UPLOAD - prevents the
+			// '@' modifier from working for security reasons (in PHP 5.6, the default value is true)
+			// http://stackoverflow.com/a/25934129
+			// http://php.net/manual/en/migration56.changed-functions.php
+			// http://comments.gmane.org/gmane.comp.php.devel/87521
+			if (!defined('PHP_VERSION_ID') || PHP_VERSION_ID < 50500) {
+			  $post_data = array("file"=>"@" . $file_path);
+			} else {
+			  $post_data = array("file"=>new \CURLFile($file_path));
+			}
+			$response = null;
+			$curl = curl_init();
+			curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+			curl_setopt($curl, CURLOPT_URL, $url);
+			curl_setopt($curl, CURLOPT_POSTFIELDS, $post_data);
+			$response = curl_exec($curl);
+			$err_no = curl_errno($curl);
+			$err_msg = curl_error($curl);
+			curl_close($curl);
+			//var_dump($response);
+			if ($err_no == 0) {
+				return json_decode($response);
+			} else {
+				salon_sane()->slnm_log("Error #" . $err_no . ": " . $err_msg);
+				return "Error #" . $err_no . ": " . $err_msg;
+			}
+		}
 	}
 }
