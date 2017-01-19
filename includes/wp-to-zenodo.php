@@ -17,7 +17,7 @@ class WP_to_Zenodo {
 	private function __construct() {
 		#Stuff
 		pf_log('Start up WP_to_Zenodo');
-		$this->setup('prod');
+		$this->setup('stage');
 		$this->includes();
 		add_action('transition_post_status', array($this, 'to_zenodo_on_publish'), 10, 3);
 	}
@@ -30,7 +30,7 @@ class WP_to_Zenodo {
 			$response = $this->inital_submit( $zenodo_object );
 			//var_dump($response); die();
 			if ( false !== $response ){
-				$jats_response = $this->xml_submit();
+				$jats_response = $this->xml_submit($response);
 			}
 		}
 
@@ -217,7 +217,7 @@ class WP_to_Zenodo {
 	public function xml_submit($id_array, $post){
 		$url = $this->assemble_url('files');
 
-		$file_data = '';
+		$file_data = wp_to_jats()->get_the_jats($id_array['post_id']);
 	}
 
 	public function image_submit($id_array, $image_atttachment_id){
