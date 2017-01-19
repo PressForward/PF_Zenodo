@@ -17,6 +17,28 @@ class WP_to_JATS {
 		#Stuff
 		pf_log('Start up WP_to_JATS');
 		$this->template_dir = PF_A_ROOT."/templates/";
+		$this->jats_endpoint = 'jats';
+		add_action('init', array($this, 'jats_view_init') );
+		add_action( 'template_redirect', array( $this, 'jats_view' ) );
+	}
+
+
+	public function jats_view_init(){
+		add_rewrite_endpoint( $this->jats_endpoint, EP_PERMALINK | EP_PAGES );
+	}
+	/**
+	 * embedable xml
+	 * @return [type] [description]
+	 */
+	public function jats_view(){
+		global $wp_query;
+		// if this is not a request for the view or singular object then bail
+		if ( ! isset( $wp_query->query_vars[$this->jats_endpoint] ) || ! is_singular() ){
+			return;
+		}
+
+		echo $this->get_the_jats(get_post()->ID);
+		exit;
 	}
 
 	private function cats_to_cat_names($categories){
@@ -81,10 +103,10 @@ class WP_to_JATS {
 		 */
 	}
 
-	public function assemble_jats( $post_object ){
-		$post_array = get_post($post_object, ARRAY_A);
+	public function assemble_jats( $post_id ){
+		$post_array = get_post($post_id, ARRAY_A);
 		$zenodo_object = new Zenodo_Submit_Object($post_array);
-		$categories = get_the_category($post_object->ID);
+		$categories = get_the_category($post_id);
 		if (empty($zenodo_object->description)){
 			$excerpt = $post_array['post_excerpt'];
 		} else {
@@ -107,11 +129,11 @@ class WP_to_JATS {
 		return $jats_values;
 	}
 
-	public function get_the_jats( $post_object, $override_vars = array(), $use_mu = false ){
-		if ( is_array( $post_object ) ){
-			$post_vars = $post_object;
+	public function get_the_jats( $post_id, $override_vars = array(), $use_mu = false ){
+		if ( is_array( $post_id ) ){
+			$post_vars = $post_id;
 		} else {
-			$post_vars = $this->assemble_jats( $post_object );
+			$post_vars = $this->assemble_jats( $post_id );
 		}
 		/**
 		 * Define the array of defaults

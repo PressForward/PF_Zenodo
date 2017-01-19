@@ -37,6 +37,7 @@ function pressforward_arceli() {
     require( dirname( __FILE__ ) . '/models/class-Submit_Object.php' );
     require( dirname( __FILE__ ) . '/includes/wp-to-jats.php' );
     require( dirname( __FILE__ ) . '/includes/wp-to-zenodo.php' );
+	wp_to_jats();
 	//return PF_AB_Subscriber::init();
 }
 add_action( 'pressforward_init', 'pressforward_arceli' );
