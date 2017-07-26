@@ -30,7 +30,8 @@ class WP_to_Zenodo {
 			$response = $this->inital_submit( $zenodo_object );
 			//var_dump($response); die();
 			if ( false !== $response ){
-				$jats_response = $this->xml_submit($response);
+				$jats_response = $this->xml_submit($response, $zenodo_object);
+				$data_response = $this->data_submit($response, $zenodo_object);
 			}
 		}
 
@@ -188,6 +189,9 @@ class WP_to_Zenodo {
 			case 'files':
 				return $this->base_zenodo_url.'deposit/depositions/'.$id_array['id'].'/files?access_token='.$this->api_key;
 				break;
+			case 'data':
+				return $this->base_zenodo_url.'deposit/depositions/'.$id_array['id'].'?access_token='.$this->api_key;
+				break;
 			default:
 				# code...
 				break;
@@ -200,13 +204,15 @@ class WP_to_Zenodo {
 
 		);
 		$url = $this->assemble_url('deposit');
-		$post_result = $this->post($url, $args);
-		if ( false !== $post_result ){
+		$empty_deposit = $this->post($url, array(  ) );
+		//$post_result = $this->post($url, $args);
+		if ( false !== $empty_deposit ){
 			add_post_meta($submit_object->ID, 'pf_zenodo_id', $post_result['id'], true);
 			return array (
-				'zenodo_id'		=>	$post_result['id'],
-				'post_id' 		=>  $submit_object->ID
-				//'doi'	=>	$post_result['doi'] // this doesn't happen until later, when we publish
+				'deposition_id'		=>	$post_result['id'],
+				'filename' 		=>  $submit_object->title,
+				'filelink'		=>	trailingslashit(get_permalink($submit_object->ID)).'jats'
+				//'file'	=>	$post_result['doi'] // this doesn't happen until later, when we publish
 			);
 		} else {
 			return false;
@@ -214,10 +220,16 @@ class WP_to_Zenodo {
 
 	}
 
-	public function xml_submit($id_array, $post){
-		$url = $this->assemble_url('files');
+	public function xml_submit($id_array, $zenodo_object){
+		$url = $this->assemble_url('files', $id_array);
+		//file upload
+		$this->post($url, array( 'access_token' => $this->api_key, 'filename' => $submit_object->title ) );
+		//$file_data = wp_to_jats()->get_the_jats($id_array['post_id']);
+	}
 
-		$file_data = wp_to_jats()->get_the_jats($id_array['post_id']);
+	public function data_submit($id_array, $zenodo_object){
+		$url = $this->assemble_url('data', $id_array);
+		$this->post($url, $zenodo_object);
 	}
 
 	public function image_submit($id_array, $image_atttachment_id){
@@ -247,6 +259,10 @@ class WP_to_Zenodo {
 
 	public function post($url, $args){
 		$post = $this->http_interface->post($url, $args);
+	}
+
+	public function post_with_file($url, $args){
+		$post = $this->http_interface->curl_upload($url, $args);
 	}
 
 	public function process_error_code($code){

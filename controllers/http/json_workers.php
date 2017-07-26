@@ -2,7 +2,7 @@
 if (!class_exists('ZS_JSON_Workers')){
 	class ZS_JSON_Workers {
 
-		public static $ver = '1.0.3';
+		public static $ver = '1.0.5';
 
 		public static function init() {
             		static $instance;
@@ -148,7 +148,7 @@ if (!class_exists('ZS_JSON_Workers')){
 			}
 		}
 
-		public function curl_upload($url, $file_path){
+		public function curl_upload($url, $file_path, $args = array()){
 
 			// A new variable included with curl in PHP 5.5 - CURLOPT_SAFE_UPLOAD - prevents the
 			// '@' modifier from working for security reasons (in PHP 5.6, the default value is true)
@@ -160,6 +160,7 @@ if (!class_exists('ZS_JSON_Workers')){
 			} else {
 			  $post_data = array("file"=>new \CURLFile($file_path));
 			}
+			$post_data = array_merge($args, $post_data);
 			$response = null;
 			$curl = curl_init();
 			curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
@@ -173,7 +174,6 @@ if (!class_exists('ZS_JSON_Workers')){
 			if ($err_no == 0) {
 				return json_decode($response);
 			} else {
-				salon_sane()->slnm_log("Error #" . $err_no . ": " . $err_msg);
 				return "Error #" . $err_no . ": " . $err_msg;
 			}
 		}
