@@ -16,9 +16,8 @@ class WP_to_Zenodo {
 
 	private function __construct() {
 		#Stuff
-		$this->mode = 'dev';
 		pf_log('Start up WP_to_Zenodo');
-		$this->setup($this->mode);
+		$this->setup('stage');
 		$this->includes();
 		add_action('transition_post_status', array($this, 'to_zenodo_on_publish'), 10, 3);
 	}
@@ -30,7 +29,7 @@ class WP_to_Zenodo {
 			$zenodo_object = new Zenodo_Submit_Object($post_object);
 			$response = $this->inital_submit( $zenodo_object );
 			//var_dump($response); die();
-			if ( false !== $response || 'dev' == $this->mode ){
+			if ( false !== $response ){
 				$jats_response = $this->xml_submit($response, $zenodo_object);
 				$data_response = $this->data_submit($response, $zenodo_object);
 			}
@@ -174,16 +173,7 @@ class WP_to_Zenodo {
 			$this->base_zenodo_url = 'https://zenodo.org/api/';
 			//Define in your WP config
 			# @TODO User setting.
-			$this->api_key = PROD_ZENODO_KEY;
-		} elseif ( 'dev' == $env ) {
-			//https://requestb.in/1eheg4k1?inspect
-			$this->base_zenodo_url = 'https://requestb.in/1eheg4k1';
 			$this->api_key = STAGE_ZENODO_KEY;
-		} else {
-			$this->base_zenodo_url = 'https://zenodo.org/api/';
-			//Define in your WP config
-			# @TODO User setting.
-			$this->api_key = PROD_ZENODO_KEY;
 		}
 		$this->http_interface = ZS_JSON_Workers::init();
 	}
