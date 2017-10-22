@@ -16,7 +16,7 @@ class WP_to_Zenodo {
 
 	private function __construct() {
 		#Stuff
-		pf_log('Start up WP_to_Zenodo');
+		//pf_log('Start up WP_to_Zenodo');
 		$this->setup('stage');
 		$this->includes();
 		add_action('transition_post_status', array($this, 'to_zenodo_on_publish'), 10, 3);
@@ -31,7 +31,7 @@ class WP_to_Zenodo {
 			//var_dump($response); die();
 			if ( false !== $response ){
 				$jats_response = $this->xml_submit($response, $zenodo_object);
-				$data_response = $this->data_submit($response, $zenodo_object);
+				$metadata_response = $this->data_submit($response, $zenodo_object);
 			}
 		}
 
@@ -198,20 +198,30 @@ class WP_to_Zenodo {
 		}
 	}
 
-	public function inital_submit( Zenodo_Submit_Object $submit_object ){
-		$args = array(
-			'metadata' => $submit_object
-
-		);
+	public function first_zenodo_request(){
 		$url = $this->assemble_url('deposit');
-		$empty_deposit = $this->post($url, array(  ) );
+		$empty_deposit = $this->post( $url, array() );
+		return $empty_deposit;
+	}
+
+	public function inital_submit( Zenodo_Submit_Object $submit_object ){
+		$empty_deposit = $this->first_zenodo_request();
 		//$post_result = $this->post($url, $args);
-		if ( false !== $empty_deposit ){
-			add_post_meta($submit_object->ID, 'pf_zenodo_id', $post_result['id'], true);
+		if ( !empty($empty_deposit) ){
+			$zenodo_meta = get_post_meta($submit_object->ID, 'pf_zenodo', true);
+			if ( empty( $zenodo_meta ) ) {
+				$zenodo_meta = array();
+			}
+			$zenodo_meta_setup = new Zenodo_Metadata_Object($submit_object->ID);
+			$zenodo_meta_setup->build($empty_deposit);
+			$zenodo_meta['setup'] = $zenodo_meta_setup;
+			$zenodo_meta['submit'] = $submit_object;
+			update_post_meta($submit_object->ID, 'pf_zenodo', $zenodo_meta);
+			add_post_meta($submit_object->ID, 'pf_zenodo_id', $zenodo_meta_setup->id, true);
 			return array (
-				'deposition_id'		=>	$post_result['id'],
-				'filename' 		=>  $submit_object->title,
-				'filelink'		=>	trailingslashit(get_permalink($submit_object->ID)).'jats'
+				'deposition_id'	=>	$zenodo_meta_setup->id,
+				'title' 		=>  $submit_object->title,
+				'filename'		=>	trailingslashit(get_permalink($submit_object->ID)).'jats'
 				//'file'	=>	$post_result['doi'] // this doesn't happen until later, when we publish
 			);
 		} else {
@@ -255,14 +265,17 @@ class WP_to_Zenodo {
 		$url = $this->assemble_url('publish');
 		$response = $this->post($url, array());
 		//Should return 202 to say accepted.
+		return $response;
 	}
 
 	public function post($url, $args){
 		$post = $this->http_interface->post($url, $args);
+		return $post;
 	}
 
 	public function post_with_file($url, $args){
 		$post = $this->http_interface->curl_upload($url, $args);
+		return $post;
 	}
 
 	public function process_error_code($code){

@@ -22,7 +22,7 @@ class PFModifications {
 	 */
 	private function __construct() {
 		$this->metas = $this->declare_valid_metas();
-		pf_log('PFModifications go.');
+		//pf_log('PFModifications go.');
 		$this->fire_hooks();
 	}
 
@@ -82,7 +82,24 @@ class PFModifications {
 					'level'	=> array('post', 'nomination'),
 					'serialize'	=> false
 				),
-
+				'pf_zenodo' => array(
+					'name' => 'pf_zenodo',
+					'definition' => __('Zenodo Metadata', 'pf'),
+					'function'	=> __('Stores metadata related to a Zenodo deposit', 'pf'),
+					'type'	=> array('adm'),
+					'use'	=> array(),
+					'level'	=> array('post'),
+					'serialize'	=> false
+				),
+				'pf_zenodo_id' => array(
+					'name' => 'pf_zenodo_id',
+					'definition' => __('Zenodo ID', 'pf'),
+					'function'	=> __('ID of post as a Zenodo deposit', 'pf'),
+					'type'	=> array('adm'),
+					'use'	=> array(),
+					'level'	=> array('post'),
+					'serialize'	=> false
+				),
 			);
 	}
 

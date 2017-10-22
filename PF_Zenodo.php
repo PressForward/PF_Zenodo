@@ -35,6 +35,7 @@ define( 'PF_A_URL', plugins_url('/', __FILE__) );
 function pressforward_arceli() {
     require( dirname( __FILE__ ) . '/controllers/http/json_workers.php' );
     require( dirname( __FILE__ ) . '/models/class-Submit_Object.php' );
+    require( dirname( __FILE__ ) . '/models/class-Zenodo_Metadata.php' );
     require( dirname( __FILE__ ) . '/includes/wp-to-jats.php' );
     require( dirname( __FILE__ ) . '/includes/wp-to-zenodo.php' );
 	wp_to_jats();

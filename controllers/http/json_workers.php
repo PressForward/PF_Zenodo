@@ -2,7 +2,7 @@
 if (!class_exists('ZS_JSON_Workers')){
 	class ZS_JSON_Workers {
 
-		public static $ver = '1.0.5';
+		public static $ver = '1.0.6';
 
 		public static function init() {
             		static $instance;
@@ -36,7 +36,11 @@ if (!class_exists('ZS_JSON_Workers')){
 		}
 
 		public function create($args, $error_reporting = false){
-			$json = json_encode($args);
+			if (empty( $args ) ){
+				$json = "{}";
+			} else {
+				$json = json_encode($args);
+			}
 			return $this->handle($json, $error_reporting);
 		}
 
@@ -71,7 +75,7 @@ if (!class_exists('ZS_JSON_Workers')){
 				wp_die($result->get_error_message());
 			} elseif (WP_DEBUG){
 				// @todo Build a logger function here.
-				wp_die(print_r($result, true));
+				//wp_die(print_r($result, true));
 			}
 			$r = $result['body'];
 			return $r;
