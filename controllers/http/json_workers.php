@@ -152,7 +152,7 @@ if (!class_exists('ZS_JSON_Workers')){
 			}
 		}
 
-		public function curl_upload($url, $file_path, $args = array()){
+		public function curl_upload( $url, $file_path, $args = array() ){
 
 			// A new variable included with curl in PHP 5.5 - CURLOPT_SAFE_UPLOAD - prevents the
 			// '@' modifier from working for security reasons (in PHP 5.6, the default value is true)
@@ -170,6 +170,7 @@ if (!class_exists('ZS_JSON_Workers')){
 			curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 			curl_setopt($curl, CURLOPT_URL, $url);
 			curl_setopt($curl, CURLOPT_POSTFIELDS, $post_data);
+
 			$response = curl_exec($curl);
 			$err_no = curl_errno($curl);
 			$err_msg = curl_error($curl);

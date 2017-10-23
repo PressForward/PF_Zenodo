@@ -27,7 +27,7 @@ class WP_to_Zenodo {
 		if ( ( 'publish' == $new_status ) && pressforward('controller.metas')->get_post_pf_meta($post->ID, 'pf_zenodo_ready', true)){
 			$post_object = get_post($post, ARRAY_A);
 			$zenodo_object = new Zenodo_Submit_Object($post_object);
-			$response = $this->inital_submit( $zenodo_object );
+			$response = $this->inital_submit( $post_object->ID, $zenodo_object );
 			//var_dump($response); die();
 			if ( false !== $response ){
 				$jats_response = $this->xml_submit($response, $zenodo_object);
@@ -110,9 +110,9 @@ class WP_to_Zenodo {
 
 	public function fill_creators($id){
 		$filled = pressforward('controller.metas')->get_post_pf_meta($id, 'item_author', true);
-		$authors = $this->semicolon_split($filled);
 		$affiliation = $this->semicolon_split(pressforward('controller.metas')->get_post_pf_meta($id, 'pf_affiliations'));
 		$c = 0;
+		$authors = $this->semicolon_split($filled);
 		if (!empty($authors)){
 			$creators = array();
 			foreach ($authors as $author){
@@ -179,6 +179,13 @@ class WP_to_Zenodo {
 	}
 
 	public function assemble_url($endpoint = 'deposit', $id_array = false){
+		// Allow the Zenodo metadata object to override the URL when required.
+		if (is_array($id_array) && array_key_exists('setup', $id_array) && is_object($id_array['setup']) && 'Zenodo_Metadata_Object' === get_class($id_array['setup'])){
+			$links = $id_array['setup']->get('links');
+			if ( isset($links->$endpoint) ){
+				return trailingslashit($links->$endpoint).'?access_token='.$this->api_key;
+			}
+		}
 		switch ($endpoint) {
 			case 'deposit':
 				return $this->base_zenodo_url.'deposit/depositions/?access_token='.$this->api_key;
@@ -204,24 +211,27 @@ class WP_to_Zenodo {
 		return $empty_deposit;
 	}
 
-	public function inital_submit( Zenodo_Submit_Object $submit_object ){
+	public function inital_submit( $post_id, Zenodo_Submit_Object $submit_object ){
 		$empty_deposit = $this->first_zenodo_request();
 		//$post_result = $this->post($url, $args);
 		if ( !empty($empty_deposit) ){
-			$zenodo_meta = get_post_meta($submit_object->ID, 'pf_zenodo', true);
+			$zenodo_meta = get_post_meta($post_id, 'pf_zenodo', true);
 			if ( empty( $zenodo_meta ) ) {
 				$zenodo_meta = array();
 			}
-			$zenodo_meta_setup = new Zenodo_Metadata_Object($submit_object->ID);
+			$zenodo_meta_setup = new Zenodo_Metadata_Object($post_id);
 			$zenodo_meta_setup->build($empty_deposit);
 			$zenodo_meta['setup'] = $zenodo_meta_setup;
 			$zenodo_meta['submit'] = $submit_object;
-			update_post_meta($submit_object->ID, 'pf_zenodo', $zenodo_meta);
-			add_post_meta($submit_object->ID, 'pf_zenodo_id', $zenodo_meta_setup->id, true);
+			update_post_meta($post_id, 'pf_zenodo', $zenodo_meta);
+			add_post_meta($post_id, 'pf_zenodo_id', $zenodo_meta_setup->get('id'), true);
+			$post = get_post($post_id);
 			return array (
-				'deposition_id'	=>	$zenodo_meta_setup->id,
-				'title' 		=>  $submit_object->title,
-				'filename'		=>	trailingslashit(get_permalink($submit_object->ID)).'jats'
+				'id'			=>	$zenodo_meta_setup->get('id'),
+				'title' 		=>  $post->post_title,
+				'fileslug'		=>	$post->post_name.'.jats',
+				'file'			=>	trailingslashit(get_permalink($post_id)).'jats',
+				'setup'			=>	$zenodo_meta_setup
 				//'file'	=>	$post_result['doi'] // this doesn't happen until later, when we publish
 			);
 		} else {
@@ -232,8 +242,10 @@ class WP_to_Zenodo {
 
 	public function xml_submit($id_array, $zenodo_object){
 		$url = $this->assemble_url('files', $id_array);
+		
 		//file upload
-		$this->post($url, array( 'access_token' => $this->api_key, 'filename' => $submit_object->title ) );
+		$r = $this->post_with_file($url,  $id_array['file'], array( 'filename' => $id_array['fileslug'] ) );
+		return $r;
 		//$file_data = wp_to_jats()->get_the_jats($id_array['post_id']);
 	}
 
@@ -273,8 +285,8 @@ class WP_to_Zenodo {
 		return $post;
 	}
 
-	public function post_with_file($url, $args){
-		$post = $this->http_interface->curl_upload($url, $args);
+	public function post_with_file($url, $file, $data){
+		$post = $this->http_interface->curl_upload($url, $file, $data);
 		return $post;
 	}
 

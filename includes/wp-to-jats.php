@@ -36,7 +36,7 @@ class WP_to_JATS {
 		if ( ! isset( $wp_query->query_vars[$this->jats_endpoint] ) || ! is_singular() ){
 			return;
 		}
-
+		header("Content-type: text/xml");
 		echo $this->get_the_jats(get_post()->ID);
 		exit;
 	}
@@ -52,7 +52,11 @@ class WP_to_JATS {
 		return $cat_names;
 	}
 
-	private function creators_to_authors($creators){
+	private function creators_to_authors( Zenodo_Submit_Object $submit_object ){
+		if (!isset($submit_object->authors)){
+			return '';
+		}
+		$creators = $submit_object->authors;
 		if (empty( $creators )){
 			return array();
 		}
@@ -117,7 +121,7 @@ class WP_to_JATS {
 			'DOI'	=>	$zenodo_object->doi,
 			'categories'	=> $this->cats_to_cat_names($categories),
 			'item_title'	=>	$zenodo_object->title,
-			'authors'	=>	$this->creators_to_authors($zenodo_object->authors),
+			'authors'	=>	$this->creators_to_authors($zenodo_object),
 			'excerpt'	=> $excerpt,
 			'the_content'	=> $post_array['post_content'],
 			'day' => $date_obj->format('d'),
@@ -165,6 +169,29 @@ class WP_to_JATS {
 
 	public function the_jats( $vars = array(), $use_mu = false ){
 		echo $this->get_the_jats( $vars, $use_mu );
+	}
+
+	public function save_the_jats( $post_id ){
+		$jats = $this->get_the_jats( $post_id );
+		//$file = trailingslashit(get_permalink($post_id)).'jats';
+		$post = get_post($post_id);
+		$slug = $post->post_name;
+		$uploadDir = wp_upload_dir();
+		$post_date = $post->post_date;
+		$subdir = '';
+		if ( false !== DateTime::createFromFormat( '/Y/m', $uploadDir['subdir'] ) ){
+			$dt = DateTime::createFromFormat('Y-m-d H:i:s', $post->post_date);
+			$subdir = $dt->format('/Y/m');
+		} else {
+			$subdir = $uploadDir['subdir'];
+		}
+		$new_file = $uploadDir['basedir'] . $subdir . '/' . $post_id . '-' . $slug . '.' . 'jats';
+		if ( ! file_exists( $ogCacheImg ) ) {
+		    $fp = fopen($new_file,'w');
+		    fwrite($fp, $jats);
+		    fclose($fp);
+		}
+		return $new_file;
 	}
 
 	public function get_view_path( $view, $use_mu = false ){
@@ -219,6 +246,7 @@ class WP_to_JATS {
 			  return '';
 		  }
 		 // var_dump($view_file);
+		  error_reporting(0);
 		  extract( $vars, EXTR_SKIP );
 		  ob_start();
 		  include $view_file;
