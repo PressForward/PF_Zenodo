@@ -162,7 +162,15 @@ if (!class_exists('ZS_JSON_Workers')){
 			if (!defined('PHP_VERSION_ID') || PHP_VERSION_ID < 50500) {
 			  $post_data = array("file"=>"@" . $file_path);
 			} else {
-			  $post_data = array("file"=>new \CURLFile($file_path));
+				$mimetype = null;
+				$filename = null;
+				if (!empty($args['mimetype'])){
+					$mimetype = $args['mimetype'];
+				}
+				if (!empty($args['filename'])){
+					$filename = $args['filename'];
+				}
+			  	$post_data = array("file"=>new \CURLFile($file_path, $mimetype, $filename));
 			}
 			$post_data = array_merge($args, $post_data);
 			$response = null;

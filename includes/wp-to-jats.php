@@ -15,7 +15,7 @@ class WP_to_JATS {
 
 	private function __construct() {
 		#Stuff
-		pf_log('Start up WP_to_JATS');
+		//pf_log('Start up WP_to_JATS');
 		$this->template_dir = PF_A_ROOT."/templates/";
 		$this->jats_endpoint = 'jats';
 		add_action('init', array($this, 'jats_view_init') );

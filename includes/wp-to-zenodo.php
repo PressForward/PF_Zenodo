@@ -17,7 +17,11 @@ class WP_to_Zenodo {
 	private function __construct() {
 		#Stuff
 		//pf_log('Start up WP_to_Zenodo');
-		$this->setup('stage');
+		if ( WP_DEBUG ){
+			$this->setup('stage');
+		} else {
+			$this->setup('prod');
+		}
 		$this->includes();
 		add_action('transition_post_status', array($this, 'to_zenodo_on_publish'), 10, 3);
 	}
@@ -27,11 +31,12 @@ class WP_to_Zenodo {
 		if ( ( 'publish' == $new_status ) && pressforward('controller.metas')->get_post_pf_meta($post->ID, 'pf_zenodo_ready', true)){
 			$post_object = get_post($post, ARRAY_A);
 			$zenodo_object = new Zenodo_Submit_Object($post_object);
-			$response = $this->inital_submit( $post_object->ID, $zenodo_object );
+			$response = $this->inital_submit( $post_object['ID'], $zenodo_object );
 			//var_dump($response); die();
 			if ( false !== $response ){
 				$jats_response = $this->xml_submit($response, $zenodo_object);
 				$metadata_response = $this->data_submit($response, $zenodo_object);
+				$publish_response = $this->publish($response);
 			}
 		}
 
@@ -173,7 +178,7 @@ class WP_to_Zenodo {
 			$this->base_zenodo_url = 'https://zenodo.org/api/';
 			//Define in your WP config
 			# @TODO User setting.
-			$this->api_key = STAGE_ZENODO_KEY;
+			$this->api_key = PROD_ZENODO_KEY;
 		}
 		$this->http_interface = ZS_JSON_Workers::init();
 	}
@@ -242,16 +247,21 @@ class WP_to_Zenodo {
 
 	public function xml_submit($id_array, $zenodo_object){
 		$url = $this->assemble_url('files', $id_array);
-		
+		$metas = $id_array['setup'];
+		$post_id = $metas->get('post_id');
+		$filepath = wp_to_jats()->save_the_jats($post_id);
 		//file upload
-		$r = $this->post_with_file($url,  $id_array['file'], array( 'filename' => $id_array['fileslug'] ) );
+		$r = $this->post_with_file($url, $filepath, array( 'filename' => $id_array['fileslug'] ) );
 		return $r;
 		//$file_data = wp_to_jats()->get_the_jats($id_array['post_id']);
 	}
 
 	public function data_submit($id_array, $zenodo_object){
 		$url = $this->assemble_url('data', $id_array);
-		$this->post($url, $zenodo_object);
+		$data = new stdClass();
+		$zenodo_object->validate();
+		$data->metadata = $zenodo_object;
+		return $this->request($url, $data, array( 'method' => 'PUT' ) );
 	}
 
 	public function image_submit($id_array, $image_atttachment_id){
@@ -274,7 +284,7 @@ class WP_to_Zenodo {
 	}
 
 	public function publish($id_array){
-		$url = $this->assemble_url('publish');
+		$url = $this->assemble_url('publish', $id_array);
 		$response = $this->post($url, array());
 		//Should return 202 to say accepted.
 		return $response;
@@ -282,6 +292,11 @@ class WP_to_Zenodo {
 
 	public function post($url, $args){
 		$post = $this->http_interface->post($url, $args);
+		return $post;
+	}
+
+	public function request($url, $args, $method){
+		$post = $this->http_interface->post($url, $args, $method);
 		return $post;
 	}
 

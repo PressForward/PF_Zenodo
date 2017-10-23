@@ -36,15 +36,18 @@ class Zenodo_Metadata_Object{
     }
 
     public function __set($key, $value){
-        $this->set($key, $value);
+        return $this->set($key, $value);
     }
 
     public function __get($key){
-        $this->get( $key );
+        return $this->get( $key );
     }
 
     public function __unset($key){
-        unset($this->data[$key]);
+        $data = $this->data;
+        unset($data[$key]);
+        $this->data = $data;
+        return '';
     }
 
     public function __toString(){

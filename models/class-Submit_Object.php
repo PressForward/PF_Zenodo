@@ -97,6 +97,14 @@ class Zenodo_Submit_Object{
 
     }
 
+    public function validate(){
+        foreach( $this->deliver_contract() as $key=>$value ){
+            if ( empty( $this->$key ) ){
+                unset($this->$key);
+            }
+        }
+    }
+
     private function deliver_contract(){
         return array(
             'upload_type' => '',
