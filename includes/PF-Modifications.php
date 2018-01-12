@@ -49,7 +49,7 @@ class PFModifications {
 				),
 				'pf_keywords' => array(
 					'name' => 'pf_keywords',
-					'title' => ('Keywords', 'pf'),
+					'title' => __('Keywords', 'pf'),
 					'definition' => __('Topic words and phrases selected by the author', 'pf'),
 					'function'	=> __('Stores a comma-separated list containing topical phrases', 'pf'),
 					'type'	=> array('desc'),
@@ -59,7 +59,7 @@ class PFModifications {
 				),
 				'pf_references' => array(
 					'name' => 'pf_references',
-					'title' => ('References', 'pf'),
+					'title' => __('References', 'pf'),
 					'definition' => __('Pointer or citation to external descriptive information', 'pf'),
 					'function'	=> __('Stores array value containing references listed in the source feed', 'pf'),
 					'type'	=> array('adm'),
@@ -79,7 +79,7 @@ class PFModifications {
 				),
 				'pf_license' => array(
 					'name' => 'pf_license',
-					'title' => ('License', 'pf'),
+					'title' => __('License', 'pf'),
 					'definition' => __('Use agreement', 'pf'),
 					'function'	=> __('Stores a comma-separated list of license designations', 'pf'),
 					'type'	=> array('adm'),
