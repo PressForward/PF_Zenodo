@@ -179,9 +179,9 @@ class WP_to_Zenodo {
 		if ( !empty( $value ) ) {
 			$this->api_key = $value;
 		} else {
-			if ( null !== constant('STAGE_ZENODO_KEY') &&  'stage' == $env ){
+			if ( defined('STAGE_ZENODO_KEY') &&  'stage' == $env ){
 				$this->api_key = STAGE_ZENODO_KEY;
-			} else if ( null !== constant('PROD_ZENODO_KEY') &&  'prod' == $env ) {
+			} else if ( defined('PROD_ZENODO_KEY') &&  'prod' == $env ) {
 				$this->api_key = PROD_ZENODO_KEY;
 			} else {
 				$this->api_key = '';
