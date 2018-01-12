@@ -188,36 +188,41 @@ class WP_to_Zenodo {
 		if (is_array($id_array) && array_key_exists('setup', $id_array) && is_object($id_array['setup']) && 'Zenodo_Metadata_Object' === get_class($id_array['setup'])){
 			$links = $id_array['setup']->get('links');
 			if ( isset($links->$endpoint) ){
-				return trailingslashit($links->$endpoint).'?access_token='.$this->api_key;
+				$url = trailingslashit($links->$endpoint).'?access_token='.$this->api_key;
 			}
 		}
 		switch ($endpoint) {
 			case 'deposit':
-				return $this->base_zenodo_url.'deposit/depositions/?access_token='.$this->api_key;
+				$url = $this->base_zenodo_url.'deposit/depositions?access_token='.$this->api_key;
 				break;
 			case 'publish':
-				return $this->base_zenodo_url.'deposit/depositions/'.$id_array['id'].'/actions/publish?access_token='.$this->api_key;
+				$url = $this->base_zenodo_url.'deposit/depositions/'.$id_array['id'].'/actions/publish?access_token='.$this->api_key;
 				break;
 			case 'files':
-				return $this->base_zenodo_url.'deposit/depositions/'.$id_array['id'].'/files?access_token='.$this->api_key;
+				$url = $this->base_zenodo_url.'deposit/depositions/'.$id_array['id'].'/files?access_token='.$this->api_key;
 				break;
 			case 'data':
-				return $this->base_zenodo_url.'deposit/depositions/'.$id_array['id'].'?access_token='.$this->api_key;
+				$url = $this->base_zenodo_url.'deposit/depositions/'.$id_array['id'].'?access_token='.$this->api_key;
 				break;
 			default:
 				# code...
 				break;
 		}
+		pf_log($url);
+		return $url;
 	}
 
 	public function first_zenodo_request(){
 		$url = $this->assemble_url('deposit');
+		pf_log('deposit to:' + $url);
 		$empty_deposit = $this->post( $url, array() );
+		pf_log($empty_deposit);
 		return $empty_deposit;
 	}
 
 	public function inital_submit( $post_id, Zenodo_Submit_Object $submit_object ){
 		$empty_deposit = $this->first_zenodo_request();
+		pf_log($empty_deposit);
 		//$post_result = $this->post($url, $args);
 		if ( !empty($empty_deposit) ){
 			$zenodo_meta = get_post_meta($post_id, 'pf_zenodo', true);
@@ -225,9 +230,13 @@ class WP_to_Zenodo {
 				$zenodo_meta = array();
 			}
 			$zenodo_meta_setup = new Zenodo_Metadata_Object($post_id);
+			pf_log($zenodo_meta_setup);
 			$zenodo_meta_setup->build($empty_deposit);
+			pf_log($zenodo_meta_setup);
 			$zenodo_meta['setup'] = $zenodo_meta_setup;
 			$zenodo_meta['submit'] = $submit_object;
+			pf_log('Zenodo Meta');
+			pf_log($zenodo_meta);
 			update_post_meta($post_id, 'pf_zenodo', $zenodo_meta);
 			add_post_meta($post_id, 'pf_zenodo_id', $zenodo_meta_setup->get('id'), true);
 			$post = get_post($post_id);
