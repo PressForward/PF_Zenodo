@@ -170,7 +170,7 @@ class PFModifications {
 					<label for="pf_license">
 						<select type="text" id="pf_license" name="pf_license">
 							<option value="cc-zero">CC-0</option>
-							<option value="cc-by">CC-BY</option>
+							<option value="cc-by" selected="selected">CC-BY</option>
 						</select><br />
 						CC0  :: “I don’t care about attribution”
 						CC-By :: “I want to receive attribution”
