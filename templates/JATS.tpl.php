@@ -3,10 +3,15 @@
 <article xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:mml="http://www.w3.org/1998/Math/MathML" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" article-type="other" dtd-version="1.0">
 	<front>
 		<journal-meta>
-			<journal-id journal-id-type="publisher-id">arce.li</journal-id>
-			<journal-title-group><journal-title>Arce.li</journal-title></journal-title-group>
+			<?php
+				$pub_id = str_replace( 'http://', '', get_bloginfo('url'));
+				$pub_id = str_replace( 'https://', '', $pub_id);
+				$pub_id = str_replace( '/', '', $pub_id);
+			?>
+			<journal-id journal-id-type="publisher-id"><?php echo $pub_id; ?></journal-id>
+			<journal-title-group><journal-title><?php echo get_bloginfo('name'); ?></journal-title></journal-title-group>
 			<publisher>
-				<publisher-name>Arce.li</publisher-name>
+				<publisher-name><?php echo get_bloginfo('name'); ?></publisher-name>
 			</publisher>
 		</journal-meta>
 		<article-meta>

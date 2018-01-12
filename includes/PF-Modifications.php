@@ -22,7 +22,7 @@ class PFModifications {
 	 */
 	private function __construct() {
 		$this->metas = $this->declare_valid_metas();
-		pf_log('PFModifications go.');
+		//pf_log('PFModifications go.');
 		$this->fire_hooks();
 	}
 
@@ -87,7 +87,24 @@ class PFModifications {
 					'level'	=> array('item', 'post', 'nomination'),
 					'serialize'	=> true
 				),
-
+				'pf_zenodo' => array(
+					'name' => 'pf_zenodo',
+					'definition' => __('Zenodo Metadata', 'pf'),
+					'function'	=> __('Stores metadata related to a Zenodo deposit', 'pf'),
+					'type'	=> array('adm'),
+					'use'	=> array(),
+					'level'	=> array('post'),
+					'serialize'	=> false
+				),
+				'pf_zenodo_id' => array(
+					'name' => 'pf_zenodo_id',
+					'definition' => __('Zenodo ID', 'pf'),
+					'function'	=> __('ID of post as a Zenodo deposit', 'pf'),
+					'type'	=> array('adm'),
+					'use'	=> array(),
+					'level'	=> array('post'),
+					'serialize'	=> false
+				),
 			);
 	}
 
@@ -126,10 +143,12 @@ class PFModifications {
 		);
 		$check = pressforward('controller.metas')->update_pf_meta($id, 'pf_zenodo_ready', true);
 		foreach ($valid_metas as $get_key => $descript ){
-			pf_log($id.'-'.$get_key.'-'.$descript['name']);
-			pf_log($_POST[$get_key]);
-			$check = pressforward('controller.metas')->update_pf_meta($id, $descript['name'], $_POST[$get_key]);
-			pf_log($check);
+			if ($_POST[$get_key]){
+				pf_log($id.'-'.$get_key.'-'.$descript['name']);
+				pf_log($_POST[$get_key]);
+				$check = pressforward('controller.metas')->update_pf_meta($id, $descript['name'], $_POST[$get_key]);
+				pf_log($check);
+			}
 		}
 		return '';
 	}
@@ -156,7 +175,7 @@ class PFModifications {
 					<label for="pf_license">
 						<select type="text" id="pf_license" name="pf_license">
 							<option value="cc-zero">CC-0</option>
-							<option value="cc-by">CC-BY</option>
+							<option value="cc-by" selected="selected">CC-BY</option>
 						</select><br />
 						CC0  :: “I don’t care about attribution”
 						CC-By :: “I want to receive attribution”

@@ -2,7 +2,7 @@
 if (!class_exists('ZS_JSON_Workers')){
 	class ZS_JSON_Workers {
 
-		public static $ver = '1.0.3';
+		public static $ver = '1.0.6';
 
 		public static function init() {
             		static $instance;
@@ -36,7 +36,11 @@ if (!class_exists('ZS_JSON_Workers')){
 		}
 
 		public function create($args, $error_reporting = false){
-			$json = json_encode($args);
+			if (empty( $args ) ){
+				$json = "{}";
+			} else {
+				$json = json_encode($args);
+			}
 			return $this->handle($json, $error_reporting);
 		}
 
@@ -71,7 +75,7 @@ if (!class_exists('ZS_JSON_Workers')){
 				wp_die($result->get_error_message());
 			} elseif (WP_DEBUG){
 				// @todo Build a logger function here.
-				wp_die(print_r($result, true));
+				//wp_die(print_r($result, true));
 			}
 			$r = $result['body'];
 			return $r;
@@ -148,7 +152,7 @@ if (!class_exists('ZS_JSON_Workers')){
 			}
 		}
 
-		public function curl_upload($url, $file_path){
+		public function curl_upload( $url, $file_path, $args = array() ){
 
 			// A new variable included with curl in PHP 5.5 - CURLOPT_SAFE_UPLOAD - prevents the
 			// '@' modifier from working for security reasons (in PHP 5.6, the default value is true)
@@ -158,13 +162,23 @@ if (!class_exists('ZS_JSON_Workers')){
 			if (!defined('PHP_VERSION_ID') || PHP_VERSION_ID < 50500) {
 			  $post_data = array("file"=>"@" . $file_path);
 			} else {
-			  $post_data = array("file"=>new \CURLFile($file_path));
+				$mimetype = null;
+				$filename = null;
+				if (!empty($args['mimetype'])){
+					$mimetype = $args['mimetype'];
+				}
+				if (!empty($args['filename'])){
+					$filename = $args['filename'];
+				}
+			  	$post_data = array("file"=>new \CURLFile($file_path, $mimetype, $filename));
 			}
+			$post_data = array_merge($args, $post_data);
 			$response = null;
 			$curl = curl_init();
 			curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 			curl_setopt($curl, CURLOPT_URL, $url);
 			curl_setopt($curl, CURLOPT_POSTFIELDS, $post_data);
+
 			$response = curl_exec($curl);
 			$err_no = curl_errno($curl);
 			$err_msg = curl_error($curl);
@@ -173,7 +187,6 @@ if (!class_exists('ZS_JSON_Workers')){
 			if ($err_no == 0) {
 				return json_decode($response);
 			} else {
-				salon_sane()->slnm_log("Error #" . $err_no . ": " . $err_msg);
 				return "Error #" . $err_no . ": " . $err_msg;
 			}
 		}
