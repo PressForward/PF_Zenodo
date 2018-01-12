@@ -39,48 +39,53 @@ class PFModifications {
 		return array(
 				'pf_affiliations' => array(
 					'name' => 'pf_affiliations',
-					'definition' => __('Semicolon seperated list', 'pf'),
-					'function'	=> __('Stores a count of the number of errors a feed has experianced', 'pf'),
+					'title' => __('Affiliations', 'pf'),
+					'definition' => __('Affiliated institution(s)', 'pf'),
+					'function'	=> __('Stores a comma-separated set of affiliated corporate bodies as listed in the source feed', 'pf'),
 					'type'	=> array('adm'),
 					'use'	=> array(),
-					'level'	=> array('post', 'nomination'),
-					'serialize'	=> false
+					'level'	=> array('item', 'post', 'nomination'),
+					'serialize'	=> true
 				),
 				'pf_keywords' => array(
 					'name' => 'pf_keywords',
-					'definition' => __('Semicolon seperated list', 'pf'),
-					'function'	=> __('Stores a count of the number of errors a feed has experianced', 'pf'),
-					'type'	=> array('adm'),
+					'title' => ('Keywords', 'pf'),
+					'definition' => __('Topic words and phrases selected by the author', 'pf'),
+					'function'	=> __('Stores a comma-separated list containing topical phrases', 'pf'),
+					'type'	=> array('desc'),
 					'use'	=> array(),
-					'level'	=> array('post', 'nomination'),
-					'serialize'	=> false
+					'level'	=> array('item', 'post', 'nomination'),
+					'serialize'	=> true
 				),
 				'pf_references' => array(
 					'name' => 'pf_references',
-					'definition' => __('Semicolon seperated list', 'pf'),
-					'function'	=> __('Stores a count of the number of errors a feed has experianced', 'pf'),
+					'title' => ('References', 'pf'),
+					'definition' => __('Pointer or citation to external descriptive information', 'pf'),
+					'function'	=> __('Stores array value containing references listed in the source feed', 'pf'),
 					'type'	=> array('adm'),
 					'use'	=> array(),
-					'level'	=> array('post', 'nomination'),
+					'level'	=> array('item', 'post', 'nomination'),
 					'serialize'	=> false
 				),
 				'pf_abstract' => array(
 					'name' => 'pf_abstract',
-					'definition' => __('Semicolon seperated list', 'pf'),
-					'function'	=> __('Stores a count of the number of errors a feed has experianced', 'pf'),
-					'type'	=> array('adm'),
+					'title' => __('Abstract', 'pf'),
+					'definition' => __('Brief textual description of the content of the resource.', 'pf'),
+					'function'	=> __('Stores the abstract retrieved from the feed', 'pf'),
+					'type'	=> array('desc'),
 					'use'	=> array(),
-					'level'	=> array('post', 'nomination'),
+					'level'	=> array('item', 'post', 'nomination'),
 					'serialize'	=> false
 				),
 				'pf_license' => array(
 					'name' => 'pf_license',
-					'definition' => __('Semicolon seperated list', 'pf'),
-					'function'	=> __('Stores a count of the number of errors a feed has experianced', 'pf'),
+					'title' => ('License', 'pf'),
+					'definition' => __('Use agreement', 'pf'),
+					'function'	=> __('Stores a comma-separated list of license designations', 'pf'),
 					'type'	=> array('adm'),
 					'use'	=> array(),
-					'level'	=> array('post', 'nomination'),
-					'serialize'	=> false
+					'level'	=> array('item', 'post', 'nomination'),
+					'serialize'	=> true
 				),
 
 			);
