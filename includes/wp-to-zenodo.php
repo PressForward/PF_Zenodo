@@ -174,22 +174,33 @@ class WP_to_Zenodo {
 		add_action('pressforward_init', 'pf_modifications', 12, 0 );
 	}
 
+	public function set_api_key($env){
+		$value = get_option('zenodo_api-key', "");
+		if ( !empty( $value ) ) {
+			$this->api_key = $value;
+		} else {
+			if ( null !== STAGE_ZENODO_KEY &&  'stage' == $env ){
+				$this->api_key = STAGE_ZENODO_KEY;
+			} else if ( null !== PROD_ZENODO_KEY &&  'prod' == $env ) {
+				$this->api_key = PROD_ZENODO_KEY;
+			} else {
+				$this->api_key = '';
+			}
+		}
+	}
+
 	public function setup($env = 'stage'){
 		if ( 'stage' == $env ){
 			$this->base_zenodo_url = 'https://sandbox.zenodo.org/api/';
 			//Define in your WP config
 			# @TODO User setting.
-			$this->api_key = STAGE_ZENODO_KEY;
 		} elseif ( 'prod' == $env ){
 			$this->base_zenodo_url = 'https://zenodo.org/api/';
 			//Define in your WP config
 			# @TODO User setting.
-			$this->api_key = PROD_ZENODO_KEY;
 		}
-		$value = get_option('zenodo_api-key', "");
-		if ( !empty( $value ) ) {
-			$this->api_key = $value;
-		}
+		$this->set_api_key($env);
+
 		$this->http_interface = ZS_JSON_Workers::init();
 	}
 
