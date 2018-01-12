@@ -28,15 +28,20 @@ class WP_to_Zenodo {
 
 	public function to_zenodo_on_publish( $new_status, $old_status, $post ){
 		remove_action( 'transition_post_status', array($this, 'to_zenodo_on_publish') );
-		if ( ( 'publish' == $new_status ) && pressforward('controller.metas')->get_post_pf_meta($post->ID, 'pf_zenodo_ready', true)){
-			$post_object = get_post($post, ARRAY_A);
-			$zenodo_object = new Zenodo_Submit_Object($post_object);
-			$response = $this->inital_submit( $post_object['ID'], $zenodo_object );
-			//var_dump($response); die();
-			if ( false !== $response ){
-				$jats_response = $this->xml_submit($response, $zenodo_object);
-				$metadata_response = $this->data_submit($response, $zenodo_object);
-				$publish_response = $this->publish($response);
+		$zenodo_data = get_post_meta($post->ID, 'pf_zenodo', true);
+		if ( is_array($zenodo_data) && array_key_exists( 'setup', $zenodo_data ) && ($zenodo_data['setup']->id != false)){
+			// Already on Zenodo
+		} else {
+			if ( ( 'publish' == $new_status ) && pressforward('controller.metas')->get_post_pf_meta($post->ID, 'pf_zenodo_ready', true)){
+				$post_object = get_post($post, ARRAY_A);
+				$zenodo_object = new Zenodo_Submit_Object($post_object);
+				$response = $this->inital_submit( $post_object['ID'], $zenodo_object );
+				//var_dump($response); die();
+				if ( false !== $response ){
+					$jats_response = $this->xml_submit($response, $zenodo_object);
+					$metadata_response = $this->data_submit($response, $zenodo_object);
+					$publish_response = $this->publish($response);
+				}
 			}
 		}
 
