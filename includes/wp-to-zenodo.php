@@ -24,6 +24,7 @@ class WP_to_Zenodo {
 		}
 		$this->includes();
 		add_action('transition_post_status', array($this, 'to_zenodo_on_publish'), 10, 3);
+		add_action( 'admin_init', array( $this, 'register_api_key') );
 	}
 
 	public function to_zenodo_on_publish( $new_status, $old_status, $post ){
@@ -185,6 +186,10 @@ class WP_to_Zenodo {
 			# @TODO User setting.
 			$this->api_key = PROD_ZENODO_KEY;
 		}
+		$value = get_option('zenodo_api-key', "");
+		if ( !empty( $value ) ) {
+			$this->api_key = $value;
+		}
 		$this->http_interface = ZS_JSON_Workers::init();
 	}
 
@@ -323,6 +328,33 @@ class WP_to_Zenodo {
 
 	}
 
+	public function zenodo_api_key_storage(){
+		if (array_key_exists('zenodo_api-key', $_POST ) && ('' != $_POST['zenodo_api-key']) ){
+			//update_option('zenodo_api-key', $_POST['zenodo_api-key']);
+		}
+		$value = get_option('zenodo_api-key', "");
+		?>
+		<input name="zenodo_api-key" type="text" id="zenodo_api-key" value="<?php echo esc_attr($value); ?>" class="regular-text code">'
+		<?php
+		return '';
+	}
+
+	public function register_api_key(){
+		register_setting( 'general', 'zenodo_api-key', array(
+			'type'	=>	'string',
+			'description'	=>	'API Key for Zenodo, from your Applications Settings',
+			'show_in_rest'	=> false,
+			'sanitize_callback'	=> function($value){ return sanitize_text_field($value); }
+		) );
+		add_settings_field(
+            'zenodo_api-key',
+            'API Key for Zenodo, from your Applications Settings',
+            array( $this, 'zenodo_api_key_storage' ),
+            'general',
+            'default'
+            //array( 'label_for' => 'zenodo_api-key' )
+        ); 
+	}
 }
 
 function wp_to_zenodo(){
