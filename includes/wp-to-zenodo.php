@@ -176,7 +176,7 @@ class WP_to_Zenodo {
 
 	public function set_api_key($env){
 		$value = get_option('zenodo_api-key', "");
-		if ( !empty( $value ) ) {
+		if ( "" !== $value ) {
 			$this->api_key = $value;
 		} else {
 			if ( defined('STAGE_ZENODO_KEY') &&  'stage' == $env ){
