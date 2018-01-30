@@ -39,8 +39,11 @@ class WP_to_Zenodo {
 				$post_object = get_post($post, ARRAY_A);
 				$zenodo_object = new Zenodo_Submit_Object($post_object);
 				$response = $this->inital_submit( $post_object['ID'], $zenodo_object );
+				// pf_log('Zenodo Object');
+				// pf_log($zenodo_object);
 				//var_dump($response); die();
 				if ( false !== $response ){
+					pf_log('Response is ready');
 					$jats_response = $this->xml_submit($response, $zenodo_object);
 					$metadata_response = $this->data_submit($response, $zenodo_object);
 					$publish_response = $this->publish($response);
