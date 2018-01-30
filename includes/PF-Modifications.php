@@ -105,6 +105,15 @@ class PFModifications {
 					'level'	=> array('post'),
 					'serialize'	=> false
 				),
+				'pf_zenodo_ready' => array(
+					'name' => 'pf_zenodo_ready',
+					'definition' => __('Zenodo Ready', 'pf'),
+					'function'	=> __('Ready for Zenodo deposit', 'pf'),
+					'type'	=> array('adm'),
+					'use'	=> array(),
+					'level'	=> array('post'),
+					'serialize'	=> false
+				),
 			);
 	}
 

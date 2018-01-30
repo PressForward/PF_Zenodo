@@ -33,7 +33,8 @@ class WP_to_Zenodo {
 		if ( is_array($zenodo_data) && array_key_exists( 'setup', $zenodo_data ) && ($zenodo_data['setup']->id != false)){
 			// Already on Zenodo
 		} else {
-			if ( ( 'publish' == $new_status ) && pressforward('controller.metas')->get_post_pf_meta($post->ID, 'pf_zenodo_ready', true)){
+			$check = pressforward('controller.metas')->get_post_pf_meta($post->ID, 'pf_zenodo_ready', true);
+			if ( ( 'publish' == $new_status ) && $check){
 				$post_object = get_post($post, ARRAY_A);
 				$zenodo_object = new Zenodo_Submit_Object($post_object);
 				$response = $this->inital_submit( $post_object['ID'], $zenodo_object );
@@ -286,7 +287,7 @@ class WP_to_Zenodo {
 		//$file_data = wp_to_jats()->get_the_jats($id_array['post_id']);
 	}
 
-	public function data_submit($id_array, $zenodo_object){
+	public function q($id_array, $zenodo_object){
 		$url = $this->assemble_url('data', $id_array);
 		$data = new stdClass();
 		$zenodo_object->validate();
@@ -316,6 +317,7 @@ class WP_to_Zenodo {
 	public function publish($id_array){
 		$url = $this->assemble_url('publish', $id_array);
 		$response = $this->post($url, array());
+		pf_log($response);
 		//Should return 202 to say accepted.
 		return $response;
 	}

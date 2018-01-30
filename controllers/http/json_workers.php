@@ -75,7 +75,7 @@ if (!class_exists('ZS_JSON_Workers')){
 				wp_die($result->get_error_message());
 			} elseif (WP_DEBUG){
 				// @todo Build a logger function here.
-				//wp_die(print_r($result, true));
+				pf_log($result);
 			}
 			$r = $result['body'];
 			return $r;
