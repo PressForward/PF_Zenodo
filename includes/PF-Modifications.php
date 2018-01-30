@@ -113,7 +113,7 @@ class PFModifications {
 					'use'	=> array(),
 					'level'	=> array('post'),
 					'serialize'	=> false
-				),
+				)
 			);
 	}
 

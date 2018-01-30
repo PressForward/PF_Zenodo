@@ -32,6 +32,7 @@ class WP_to_Zenodo {
 		$zenodo_data = get_post_meta($post->ID, 'pf_zenodo', true);
 		if ( is_array($zenodo_data) && array_key_exists( 'setup', $zenodo_data ) && ($zenodo_data['setup']->id != false)){
 			// Already on Zenodo
+			pf_log('Zenodo Publish complete');
 		} else {
 			$check = pressforward('controller.metas')->get_post_pf_meta($post->ID, 'pf_zenodo_ready', true);
 			if ( ( 'publish' == $new_status ) && $check){
@@ -43,7 +44,13 @@ class WP_to_Zenodo {
 					$jats_response = $this->xml_submit($response, $zenodo_object);
 					$metadata_response = $this->data_submit($response, $zenodo_object);
 					$publish_response = $this->publish($response);
+				} else {
+					pf_log('submit failed');
+					pf_log($response);
 				}
+			} else {
+				pf_log('Not ready or after ready for Zenodo Publishing.');
+				pf_log($check);
 			}
 		}
 
@@ -287,7 +294,7 @@ class WP_to_Zenodo {
 		//$file_data = wp_to_jats()->get_the_jats($id_array['post_id']);
 	}
 
-	public function q($id_array, $zenodo_object){
+	public function data_submit($id_array, $zenodo_object){
 		$url = $this->assemble_url('data', $id_array);
 		$data = new stdClass();
 		$zenodo_object->validate();
