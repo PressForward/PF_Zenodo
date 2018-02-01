@@ -47,7 +47,8 @@ class Zenodo_Submit_Object {
 	private function set_up_object( $basic_data ) {
 		// var_dump($basic_data); die();
 		$defaults = array(
-			'ID' => 0,
+			'ID'          => 0,
+			'communities' => array(),
 				// 'title' => '',
 				// 'authors' => array(),
 				// '2015-05-05'

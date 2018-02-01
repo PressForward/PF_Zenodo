@@ -38,13 +38,13 @@ class WP_to_Zenodo {
 			if ( ( 'publish' == $new_status ) && $check ) {
 				$post_object   = get_post( $post, ARRAY_A );
 				$zenodo_object = new Zenodo_Submit_Object( $post_object );
-				$response	  = $this->inital_submit( $post_object['ID'], $zenodo_object );
+				$response      = $this->inital_submit( $post_object['ID'], $zenodo_object );
 				// pf_log('Zenodo Object');
 				// pf_log($zenodo_object);
 				// var_dump($response); die();
 				if ( false !== $response ) {
 					pf_log( 'Response is ready' );
-					$jats_response	 = $this->xml_submit( $response, $zenodo_object );
+					$jats_response     = $this->xml_submit( $response, $zenodo_object );
 					$metadata_response = $this->data_submit( $response, $zenodo_object );
 					$publish_response  = $this->publish( $response );
 				} else {
@@ -105,23 +105,24 @@ class WP_to_Zenodo {
 				// Always will be set, never will be filled.
 				break;
 			case 'references':
-				$filler = $this->semicolon_split( pressforward( 'controller.metas' )->get_post_pf_meta( $id, 'pf_references', true ) );
+				$filled = $this->semicolon_split( pressforward( 'controller.metas' )->get_post_pf_meta( $id, 'pf_references', true ) );
 				break;
 			case 'communities':
 				$communities = get_option( 'zenodo_community_storage', '' );
-				if (!empty($communities)){
-					$communities_array = explode(',', $communities);
-					$filler = array();
-					foreach ($communities_array as $community_id){
-						$community = new stdClass();
-						$community->identifier = trim($community_id);
-						$filler[] = $community;
+				if ( ! empty( $communities ) ) {
+					$communities_array = explode( ',', $communities );
+					$filler            = array();
+					foreach ( $communities_array as $community_id ) {
+						// $community = new stdClass();
+						// $community->identifier = trim($community_id);
+						$filler[] = array( 'identifier' => trim( $community_id ) );
 					}
 				} else {
 					$filler = array(
 						array( 'identifier' => 'arceli' ),
 					);
 				}
+				$filled = $filler;
 				break;
 			default:
 				$filler = 'fill_' . $type;
@@ -142,16 +143,16 @@ class WP_to_Zenodo {
 	}
 
 	public function fill_creators( $id ) {
-		$filled	  = pressforward( 'controller.metas' )->get_post_pf_meta( $id, 'item_author', true );
+		$filled      = pressforward( 'controller.metas' )->get_post_pf_meta( $id, 'item_author', true );
 		$affiliation = $this->semicolon_split( pressforward( 'controller.metas' )->get_post_pf_meta( $id, 'pf_affiliations' ) );
-		$c		   = 0;
-		$authors	 = $this->semicolon_split( $filled );
+		$c           = 0;
+		$authors     = $this->semicolon_split( $filled );
 		if ( ! empty( $authors ) ) {
 			$creators = array();
 			foreach ( $authors as $author ) {
 				if ( ! empty( $affiliation ) && ! empty( $affiliation[ $c ] ) ) {
 					$creators[] = array(
-						'name'		=> $author,
+						'name'        => $author,
 						'affiliation' => $affiliation[ $c ],
 					);
 				} else {
@@ -285,11 +286,11 @@ class WP_to_Zenodo {
 			add_post_meta( $post_id, 'pf_zenodo_id', $zenodo_meta_setup->get( 'id' ), true );
 			$post = get_post( $post_id );
 			return array(
-				'id'	   => $zenodo_meta_setup->get( 'id' ),
-				'title'	=> $post->post_title,
+				'id'       => $zenodo_meta_setup->get( 'id' ),
+				'title'    => $post->post_title,
 				'fileslug' => $post->post_name . '.jats',
-				'file'	 => trailingslashit( get_permalink( $post_id ) ) . 'jats',
-				'setup'	=> $zenodo_meta_setup,
+				'file'     => trailingslashit( get_permalink( $post_id ) ) . 'jats',
+				'setup'    => $zenodo_meta_setup,
 				// 'file'	=>  $post_result['doi'] // this doesn't happen until later, when we publish
 			);
 		} else {
@@ -298,8 +299,8 @@ class WP_to_Zenodo {
 	}
 
 	public function xml_submit( $id_array, $zenodo_object ) {
-		$url	  = $this->assemble_url( 'files', $id_array );
-		$metas	= $id_array['setup'];
+		$url      = $this->assemble_url( 'files', $id_array );
+		$metas    = $id_array['setup'];
 		$post_id  = $metas->get( 'post_id' );
 		$filepath = wp_to_jats()->save_the_jats( $post_id );
 		// file upload
@@ -317,7 +318,7 @@ class WP_to_Zenodo {
 	}
 
 	public function image_submit( $id_array, $image_atttachment_id ) {
-		$src	   = wp_get_attachment_url( $image_atttachment_id );
+		$src       = wp_get_attachment_url( $image_atttachment_id );
 		$file_data = wp_remote_get( $src );
 	}
 
@@ -334,7 +335,7 @@ class WP_to_Zenodo {
 	}
 
 	public function publish( $id_array ) {
-		$url	  = $this->assemble_url( 'publish', $id_array );
+		$url      = $this->assemble_url( 'publish', $id_array );
 		$response = $this->post( $url, array() );
 		pf_log( $response );
 		// Should return 202 to say accepted.
@@ -383,9 +384,9 @@ class WP_to_Zenodo {
 	public function register_api_key() {
 		register_setting(
 			'general', 'zenodo_api-key', array(
-				'type'			  => 'string',
-				'description'	   => 'API Key for Zenodo, from your Applications Settings',
-				'show_in_rest'	  => false,
+				'type'              => 'string',
+				'description'       => 'API Key for Zenodo, from your Applications Settings',
+				'show_in_rest'      => false,
 				'sanitize_callback' => function ( $value ) {
 					return sanitize_text_field( $value );
 				},
@@ -402,9 +403,9 @@ class WP_to_Zenodo {
 
 		register_setting(
 			'general', 'zenodo_community_storage', array(
-				'type'			  => 'string',
-				'description'	   => 'Identities of Communities you wish to submit to.',
-				'show_in_rest'	  => false,
+				'type'              => 'string',
+				'description'       => 'Identities of Communities you wish to submit to.',
+				'show_in_rest'      => false,
 				'sanitize_callback' => function ( $value ) {
 					return sanitize_text_field( $value );
 				},
